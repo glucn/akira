@@ -7,10 +7,12 @@ import { environment } from 'src/environments/environment';
 import { AngularFireModule } from '@angular/fire';
 import { SETTINGS as AUTH_SETTINGS } from '@angular/fire/auth';
 import { AngularFirestoreModule } from '@angular/fire/firestore';
+import { OverviewComponent } from './overview/overview.component';
 
 @NgModule({
   declarations: [
-    AppComponent
+    AppComponent,
+    OverviewComponent,
   ],
   imports: [
     BrowserModule,
