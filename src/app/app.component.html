@@ -1,9 +1,21 @@
-<div *ngIf="auth.user | async as user; else showLogin">
-  <router-outlet></router-outlet>
-</div>
-<ng-template #showLogin>
-  <p>Please login.</p>
-  <button (click)="login()">Login with Google</button>
-</ng-template>
+<mat-toolbar color="primary">
+  <button mat-icon-button class="toolbar-icon" aria-label="Toolbar button" (click)="drawer.toggle()">
+    <mat-icon>menu</mat-icon>
+  </button>
+  <span>Akira</span>
+</mat-toolbar>
+
+<mat-drawer-container class="page-container" autosize>
+  <mat-drawer #drawer class="sidenav" mode="side">
+    <app-sidenav></app-sidenav>
+  </mat-drawer>
+
+  <div class="page-content">
+      <router-outlet></router-outlet>
+  </div>
+
+</mat-drawer-container>
+
+
 
 
