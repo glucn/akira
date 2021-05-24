@@ -1,17 +1,25 @@
 import { Component, OnInit } from '@angular/core';
 import { AngularFireAuth } from '@angular/fire/auth';
 import firebase from 'firebase/app';
+import { SidenavItem, SidenavService } from './sidenav.service';
 
 @Component({
-  selector: 'app-sidenav',
+  selector: 'sidenav',
   templateUrl: './sidenav.component.html',
   styleUrls: ['./sidenav.component.scss']
 })
 export class SidenavComponent implements OnInit {
 
-  constructor(public auth: AngularFireAuth) { }
+  constructor(
+    public auth: AngularFireAuth,
+    private sidenavService: SidenavService,
+    ) { }
 
   ngOnInit(): void {
+  }
+
+  getSideNavItems(): SidenavItem[] {
+    return this.sidenavService.navItems;
   }
 
   login() {

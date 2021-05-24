@@ -1,8 +1,11 @@
 <div *ngIf="auth.user | async as user; else showLogin">
-  <div>Hello {{ user.displayName }}!</div>
-  <button (click)="logout()">Logout</button>
+  <mat-nav-list>
+    <sidenav-item *ngFor="let item of getSideNavItems()" [item]="item" [depth]="0"></sidenav-item>
+  </mat-nav-list>
+  <mat-divider></mat-divider>
+  <button mat-button (click)="logout()">Logout</button>
 </div>
 <ng-template #showLogin>
   <p>Please login.</p>
-  <button (click)="login()">Login with Google</button>
+  <button mat-button (click)="login()">Login with Google</button>
 </ng-template>

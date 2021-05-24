@@ -1,1 +1,7 @@
-<p>overview works!</p>
+<h1>Overview</h1>
+<div *ngIf="auth.user | async as user; else showLogin">
+  <div>Hello {{ user.displayName }}!</div>
+</div>
+<ng-template #showLogin>
+  <p>Please login.</p>
+</ng-template>

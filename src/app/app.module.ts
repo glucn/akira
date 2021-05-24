@@ -14,26 +14,36 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { SidenavComponent } from './sidenav/sidenav.component';
+import { MatDividerModule } from '@angular/material/divider';
+import { MatListModule } from '@angular/material/list';
+import { SidenavItemComponent } from './sidenav/sidenav-item/sidenav-item.component';
+import { SidenavService } from './sidenav/sidenav.service';
+import { ReportsComponent } from './reports/reports.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     OverviewComponent,
     SidenavComponent,
+    SidenavItemComponent,
+    ReportsComponent,
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
     MatButtonModule,
-    MatToolbarModule,
+    MatDividerModule,
     MatIconModule,
+    MatListModule,
     MatSidenavModule,
+    MatToolbarModule,
     AngularFireModule.initializeApp(environment.firebase),
     AngularFirestoreModule,
     BrowserAnimationsModule,
   ],
   providers: [
     { provide: AUTH_SETTINGS, useValue: { appVerificationDisabledForTesting: true } },
+    SidenavService,
   ],
   bootstrap: [AppComponent]
 })
