@@ -1,20 +1,14 @@
 import { DataSource } from '@angular/cdk/collections';
 import { Component, OnInit } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
-
-export interface Account {
-  name: string;
-  currency: string;
-  type: string;
-  balance?: number;
-}
+import { Account } from '../shared/account.service';
 
 const ACCOUNTS_MOCK: Account[] = [
-  {name: 'Cash (CAD)', balance: 100, currency: 'CAD', type: 'Cash'},
-  {name: 'Cash (CNY)', balance: 200, currency: 'CNY', type: 'Cash'},
-  {name: 'BMO - Chequing Account', balance: 100, currency: 'CAD', type: 'Bank'},
-  {name: 'BMO - Saving Account', balance: 50, currency: 'CAD', type: 'Bank'},
-  {name: 'BMO - Credit Card', balance: -100, currency: 'CAD', type: 'CreditCard'},
+  {userId: 'u01', accountId: '01', name: 'Cash (CAD)', balance: 100, currency: 'CAD', type: 'Cash'},
+  {userId: 'u01', accountId: '02', name: 'Cash (CNY)', balance: 200, currency: 'CNY', type: 'Cash'},
+  {userId: 'u01', accountId: '03', name: 'BMO - Chequing Account', balance: 100, currency: 'CAD', type: 'Bank'},
+  {userId: 'u01', accountId: '04', name: 'BMO - Saving Account', balance: 50, currency: 'CAD', type: 'Bank'},
+  {userId: 'u01', accountId: '05', name: 'BMO - Credit Card', balance: -100, currency: 'CAD', type: 'CreditCard'},
 ];
 
 @Component({
