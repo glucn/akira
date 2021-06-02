@@ -21,12 +21,4 @@ export class AppComponent implements AfterViewInit {
   ngAfterViewInit() {
     this.sidenavService.appDrawer = this.appDrawer;
   }
-
-  login() {
-    this.auth.signInWithPopup(new firebase.auth.GoogleAuthProvider());
-  }
-
-  logout() {
-    this.auth.signOut();
-  }
 }

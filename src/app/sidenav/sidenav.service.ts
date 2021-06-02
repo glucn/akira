@@ -47,7 +47,7 @@ export class SidenavService {
           iconName: 'credit_card',
         },
         {
-          displayName: 'BMO - Credit Card 9046',
+          displayName: 'BMO - Credit Card',
           iconName: 'credit_card',
         },
       ],
