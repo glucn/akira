@@ -19,6 +19,7 @@ import { MatListModule } from '@angular/material/list';
 import { SidenavItemComponent } from './sidenav/sidenav-item/sidenav-item.component';
 import { SidenavService } from './sidenav/sidenav.service';
 import { ReportsComponent } from './reports/reports.component';
+import { AccountsComponent } from './accounts/accounts.component';
 
 @NgModule({
   declarations: [
@@ -27,6 +28,7 @@ import { ReportsComponent } from './reports/reports.component';
     SidenavComponent,
     SidenavItemComponent,
     ReportsComponent,
+    AccountsComponent,
   ],
   imports: [
     BrowserModule,

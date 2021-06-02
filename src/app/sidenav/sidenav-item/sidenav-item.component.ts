@@ -42,12 +42,11 @@ export class SidenavItemComponent implements OnInit {
   }
 
   onItemSelected(item: SidenavItem) {
-    if (!item.children || !item.children.length) {
-      this.router.navigate([item.route]);
-      // this.navService.closeNav();
-    }
     if (item.children && item.children.length) {
       this.expanded = !this.expanded;
+    }
+    if (item.route) {
+      this.router.navigate([item.route]);
     }
   }
 

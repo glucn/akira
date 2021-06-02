@@ -21,14 +21,35 @@ export class SidenavService {
 
   navItems: SidenavItem[] = [
     {
-      displayName: 'My Finance',
+      displayName: 'Overview',
+      iconName: 'dashboard',
+      route: 'overview',
+    },
+    {
+      displayName: 'Accounts',
       iconName: 'savings',
+      route: 'accounts',
       children: [
         {
-          displayName: 'Overview',
-          iconName: 'dashboard',
-          route: 'overview',
-        }
+          displayName: 'Cash (CAD)',
+          iconName: 'payments',
+        },
+        {
+          displayName: 'Cash (CNY)',
+          iconName: 'payments',
+        },
+        {
+          displayName: 'BMO - Chequing Account',
+          iconName: 'credit_card',
+        },
+        {
+          displayName: 'BMO - Saving Account',
+          iconName: 'credit_card',
+        },
+        {
+          displayName: 'BMO - Credit Card 9046',
+          iconName: 'credit_card',
+        },
       ],
     },
     {
