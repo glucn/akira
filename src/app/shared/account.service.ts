@@ -27,11 +27,20 @@ export class AccountService {
     this.collectionRef = this.store.collection('account');
   }
 
-  public listAccounts(userId: string): Observable<Account[]> {
-    return of([]);
+  public listAccounts(): Observable<Account[]> {
+    return this.auth.user.pipe(
+      filter(user => !!user),
+      switchMap(user => {
+        if (!user) {
+          return of([]);
+        }
+        var collectionRef: AngularFirestoreCollection<Account> = this.store.collection('account', ref => ref.where('userId', '==', user.uid));
+        return collectionRef.valueChanges({userId: user.uid})
+      })
+    )
   }
 
-  public getAccounts(userId: string, accountId: string): Observable<Account> {
+  public getAccounts(accountId: string): Observable<Account> {
     return of();
   }
 
@@ -47,7 +56,7 @@ export class AccountService {
     return;
   }
 
-  public deleteAccounts(userId: string, accountId: string): void {
+  public deleteAccounts(accountId: string): void {
     return;
   }
 }

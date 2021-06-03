@@ -27,6 +27,7 @@ export class AccountsComponent implements OnInit {
   constructor(private accountService: AccountService, private dialog: MatDialog) { }
 
   ngOnInit(): void {
+    this.accountService.listAccounts().subscribe(res => console.log(res));
   }
 
   createAccount(): void {
