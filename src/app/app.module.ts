@@ -17,10 +17,14 @@ import { SidenavComponent } from './sidenav/sidenav.component';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatListModule } from '@angular/material/list';
 import { MatTableModule } from '@angular/material/table';
+import { MatDialogModule } from '@angular/material/dialog';
+import { MatInputModule } from '@angular/material/input';
+import { FormsModule } from '@angular/forms';
 import { SidenavItemComponent } from './sidenav/sidenav-item/sidenav-item.component';
 import { SidenavService } from './sidenav/sidenav.service';
 import { ReportsComponent } from './reports/reports.component';
 import { AccountsComponent } from './accounts/accounts.component';
+import { CreateAccountDialogComponent } from './accounts/create-account-dialog/create-account-dialog.component';
 
 @NgModule({
   declarations: [
@@ -30,19 +34,23 @@ import { AccountsComponent } from './accounts/accounts.component';
     SidenavItemComponent,
     ReportsComponent,
     AccountsComponent,
+    CreateAccountDialogComponent,
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
     MatButtonModule,
+    MatDialogModule,
     MatDividerModule,
     MatIconModule,
+    MatInputModule,
     MatListModule,
     MatSidenavModule,
     MatTableModule,
     MatToolbarModule,
     AngularFireModule.initializeApp(environment.firebase),
     AngularFirestoreModule,
+    FormsModule,
     BrowserAnimationsModule,
   ],
   providers: [

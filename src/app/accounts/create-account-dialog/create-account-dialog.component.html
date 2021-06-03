@@ -1,0 +1,19 @@
+<mat-form-field>
+  <mat-label>Name</mat-label>
+  <input matInput cdkFocusInitial [(ngModel)]="data.account.name" />
+</mat-form-field>
+
+<mat-form-field>
+  <mat-label>Currency</mat-label>
+  <input matInput [(ngModel)]="data.account.currency"/>
+</mat-form-field>
+
+<mat-form-field>
+  <mat-label>Type</mat-label>
+  <input matInput [(ngModel)]="data.account.type"/>
+</mat-form-field>
+
+<div mat-dialog-actions>
+  <button mat-button [mat-dialog-close]="{ account: data.account }">OK</button>
+  <button mat-button (click)="cancel()">Cancel</button>
+</div>

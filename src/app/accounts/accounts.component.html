@@ -6,7 +6,7 @@
     <th mat-header-cell *matHeaderCellDef> Name </th>
     <td mat-cell *matCellDef="let account"> {{account.name}} </td>
     <td mat-footer-cell *matFooterCellDef>
-      <button mat-icon-button color="primary"><mat-icon>add</mat-icon></button>
+      <button mat-icon-button color="primary" (click)="createAccount()"><mat-icon>add</mat-icon></button>
     </td>
   </ng-container>
 

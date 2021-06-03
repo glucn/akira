@@ -1,4 +1,3 @@
-import { ElementRef } from '@angular/core';
 import { Injectable } from '@angular/core';
 import { MatDrawer } from '@angular/material/sidenav';
 import { Event, NavigationEnd, Router } from '@angular/router';

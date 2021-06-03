@@ -1,7 +1,10 @@
 import { DataSource } from '@angular/cdk/collections';
 import { Component, OnInit } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
 import { BehaviorSubject, Observable } from 'rxjs';
-import { Account } from '../shared/account.service';
+import { tap, switchMap } from 'rxjs/operators';
+import { Account, AccountService } from '../shared/account.service';
+import { AccountDialogResult, CreateAccountDialogComponent } from './create-account-dialog/create-account-dialog.component';
 
 const ACCOUNTS_MOCK: Account[] = [
   {userId: 'u01', accountId: '01', name: 'Cash (CAD)', balance: 100, currency: 'CAD', type: 'Cash'},
@@ -21,9 +24,25 @@ export class AccountsComponent implements OnInit {
   displayedColumns: string[] = ['name', 'balance',  'currency', 'type', 'action'];
   dataSource = new MockDataSource();
 
-  constructor() { }
+  constructor(private accountService: AccountService, private dialog: MatDialog) { }
 
   ngOnInit(): void {
+  }
+
+  createAccount(): void {
+    const dialogRef = this.dialog.open(CreateAccountDialogComponent, {
+    width: '400px',
+    data: {
+      account: {},
+    },
+  });
+  dialogRef
+    .afterClosed()
+    .pipe(
+      tap(console.log),
+      switchMap((result: AccountDialogResult) => this.accountService.createAccounts(result.account))
+    )
+    .subscribe(() => console.log('account created'));
   }
 }
 

@@ -1,8 +1,6 @@
-import { AfterViewInit } from '@angular/core';
-import { Component, ElementRef, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ViewChild } from '@angular/core';
 import { AngularFireAuth } from '@angular/fire/auth';
 import { MatDrawer } from '@angular/material/sidenav';
-import firebase from 'firebase/app';
 import { SidenavService } from './sidenav/sidenav.service';
 
 @Component({

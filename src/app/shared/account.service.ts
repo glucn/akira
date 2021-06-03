@@ -1,11 +1,12 @@
 import { Injectable } from "@angular/core";
+import { AngularFireAuth } from "@angular/fire/auth";
 import { AngularFirestore, AngularFirestoreCollection, DocumentReference } from "@angular/fire/firestore";
-import { from, Observable, of } from "rxjs";
-import { map, switchMap } from 'rxjs/operators';
+import { Observable, of } from "rxjs";
+import { filter, switchMap } from 'rxjs/operators';
 
 export interface Account {
-  userId: string;
   accountId: string;
+  userId: string;
   name: string;
   currency: string;
   type: string;
@@ -19,8 +20,11 @@ export interface Account {
 export class AccountService {
   collectionRef: AngularFirestoreCollection<Account>;
 
-  constructor(private store: AngularFirestore) {
-    this.collectionRef = this.store.collection('accounts');
+  constructor(
+    private store: AngularFirestore,
+    public auth: AngularFireAuth,
+    ) {
+    this.collectionRef = this.store.collection('account');
   }
 
   public listAccounts(userId: string): Observable<Account[]> {
@@ -32,9 +36,11 @@ export class AccountService {
   }
 
   public createAccounts(account: Account): Observable<Account|undefined> {
-    return from(this.collectionRef.add(account)).pipe(
+    return this.auth.user.pipe(
+      filter(user => !!user),
+      switchMap(user => this.collectionRef.add({...account, userId: user?.uid || 'NON-USER'})),
       switchMap((ref: DocumentReference<Account>) => this.collectionRef.doc<Account>(ref.id).valueChanges())
-    );
+    )
   }
 
   public updateAccounts(account: Account): void {
