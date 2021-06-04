@@ -2,7 +2,7 @@ import { DataSource } from '@angular/cdk/collections';
 import { Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { BehaviorSubject, Observable } from 'rxjs';
-import { tap, switchMap } from 'rxjs/operators';
+import { tap, switchMap, skipWhile } from 'rxjs/operators';
 import { Account, AccountService } from '../shared/account.service';
 import { AccountDialogResult, CreateAccountDialogComponent } from './create-account-dialog/create-account-dialog.component';
 
@@ -41,6 +41,7 @@ export class AccountsComponent implements OnInit {
     .afterClosed()
     .pipe(
       tap(console.log),
+      skipWhile((result: AccountDialogResult) => !result || !result.account),
       switchMap((result: AccountDialogResult) => this.accountService.createAccounts(result.account))
     )
     .subscribe(() => console.log('account created'));

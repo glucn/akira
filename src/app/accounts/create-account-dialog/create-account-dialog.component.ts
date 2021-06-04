@@ -19,8 +19,6 @@ export interface AccountDialogResult {
   styleUrls: ['./create-account-dialog.component.scss']
 })
 export class CreateAccountDialogComponent implements OnInit {
-  private backupAccount: Partial<Account> = { ...this.data.account };
-
   constructor(
     public dialogRef: MatDialogRef<CreateAccountDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: AccountDialogData) { }
@@ -29,10 +27,6 @@ export class CreateAccountDialogComponent implements OnInit {
   }
 
   cancel(): void {
-    this.data.account.name = this.backupAccount.name;
-    this.data.account.type = this.backupAccount.type;
-    this.data.account.currency = this.backupAccount.currency;
-
-    this.dialogRef.close(this.data);
+    this.dialogRef.close(undefined);
   }
 }
