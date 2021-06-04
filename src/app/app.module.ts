@@ -19,6 +19,7 @@ import { MatListModule } from '@angular/material/list';
 import { MatTableModule } from '@angular/material/table';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
 import { FormsModule } from '@angular/forms';
 import { SidenavItemComponent } from './sidenav/sidenav-item/sidenav-item.component';
 import { SidenavService } from './sidenav/sidenav.service';
@@ -45,6 +46,7 @@ import { CreateAccountDialogComponent } from './accounts/create-account-dialog/c
     MatIconModule,
     MatInputModule,
     MatListModule,
+    MatSelectModule,
     MatSidenavModule,
     MatTableModule,
     MatToolbarModule,
