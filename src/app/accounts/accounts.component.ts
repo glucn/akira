@@ -63,11 +63,10 @@ export class AccountsComponent implements OnInit {
       .afterClosed()
       .pipe(
         skipWhile((result: AccountDialogResult) => !result || !result.account),
-        tap(console.log),
         switchMap((result: AccountDialogResult) => this.accountService.updateAccount(result.account))
       )
       .subscribe(
-        (next) => console.log('account update', next),
+        (next) => console.log('account updated', next),
         (err) => console.log(err)
       );
   }

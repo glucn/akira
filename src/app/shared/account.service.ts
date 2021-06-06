@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { AngularFireAuth } from '@angular/fire/auth';
 import { AngularFirestore, AngularFirestoreCollection } from '@angular/fire/firestore';
-import firebase from 'firebase';
+import firebase from 'firebase/app';
 import { combineLatest, Observable, of } from 'rxjs';
 import { map, skipWhile, switchMap } from 'rxjs/operators';
 import { v4 as uuidv4 } from 'uuid';
@@ -22,11 +22,9 @@ export interface Account {
   providedIn: 'root',
 })
 export class AccountService {
-  collectionRef: AngularFirestoreCollection<Account>; // TODO: delete it?
   collectionRef$: Observable<AngularFirestoreCollection<Account>>;
 
   constructor(private afs: AngularFirestore, public auth: AngularFireAuth) {
-    this.collectionRef = this.afs.collection('account');
     this.collectionRef$ = this.auth.user.pipe(
       skipWhile((user) => !user || user == null),
       map((user) => {
@@ -69,9 +67,7 @@ export class AccountService {
           userId: user.uid,
         });
       }),
-      switchMap(() => this.collectionRef$),
-      switchMap((collection: AngularFirestoreCollection<Account>) => collection.doc<Account>(accountId).get()),
-      map((snapshot) => (snapshot.exists ? snapshot.data() : undefined))
+      switchMap(() => this.getAccount(accountId)),
     );
   }
 
@@ -90,9 +86,7 @@ export class AccountService {
           });
         });
       }),
-      switchMap(() => this.collectionRef$),
-      switchMap((collection: AngularFirestoreCollection<Account>) => collection.doc<Account>(account.accountId).get()),
-      map((snapshot) => (snapshot.exists ? snapshot.data() : undefined))
+      switchMap(() => this.getAccount(account.accountId!)),
     );
   }
 
