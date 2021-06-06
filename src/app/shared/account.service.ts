@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { AngularFireAuth } from '@angular/fire/auth';
 import { AngularFirestore, AngularFirestoreCollection } from '@angular/fire/firestore';
+import firebase from 'firebase';
 import { combineLatest, Observable, of } from 'rxjs';
 import { map, skipWhile, switchMap } from 'rxjs/operators';
 import { v4 as uuidv4 } from 'uuid';
@@ -24,15 +25,15 @@ export class AccountService {
   collectionRef: AngularFirestoreCollection<Account>; // TODO: delete it?
   collectionRef$: Observable<AngularFirestoreCollection<Account>>;
 
-  constructor(private store: AngularFirestore, public auth: AngularFireAuth) {
-    this.collectionRef = this.store.collection('account');
+  constructor(private afs: AngularFirestore, public auth: AngularFireAuth) {
+    this.collectionRef = this.afs.collection('account');
     this.collectionRef$ = this.auth.user.pipe(
       skipWhile((user) => !user || user == null),
       map((user) => {
         if (!user) {
           throw 'User is null or undefined'; // TODO: find a better way to handle null
         }
-        var ref: AngularFirestoreCollection<Account> = this.store.collection('account', (ref) =>
+        var ref: AngularFirestoreCollection<Account> = this.afs.collection('account', (ref) =>
           ref.where('userId', '==', user.uid)
         );
         return ref;
@@ -44,8 +45,11 @@ export class AccountService {
     return this.collectionRef$.pipe(switchMap((ref) => (ref ? ref.valueChanges({ idField: 'accountId' }) : of([]))));
   }
 
-  public getAccount(accountId: string): Observable<Account> {
-    return of();
+  public getAccount(accountId: string): Observable<Account | undefined> {
+    return this.collectionRef$.pipe(
+      switchMap((collection: AngularFirestoreCollection<Account>) => collection.doc<Account>(accountId).get()),
+      map((snapshot) => (snapshot.exists ? snapshot.data() : undefined))
+    );
   }
 
   public createAccount(account: Account): Observable<Account | undefined> {
@@ -66,12 +70,30 @@ export class AccountService {
         });
       }),
       switchMap(() => this.collectionRef$),
-      switchMap((collection: AngularFirestoreCollection<Account>) => collection.doc<Account>(accountId).valueChanges())
+      switchMap((collection: AngularFirestoreCollection<Account>) => collection.doc<Account>(accountId).get()),
+      map((snapshot) => (snapshot.exists ? snapshot.data() : undefined))
     );
   }
 
-  public updateAccount(account: Account): void {
-    return;
+  public updateAccount(account: Account): Observable<Account | undefined> {
+    return this.collectionRef$.pipe(
+      switchMap((ref) => {
+        var accountDoc = ref.doc(account.accountId);
+        return firebase.firestore().runTransaction((t) => {
+          return t.get(accountDoc.ref).then((accountDoc) => {
+            t.update(accountDoc.ref, {
+              name: account.name,
+              currency: account.currency,
+              type: account.type,
+              updated: new Date(),
+            });
+          });
+        });
+      }),
+      switchMap(() => this.collectionRef$),
+      switchMap((collection: AngularFirestoreCollection<Account>) => collection.doc<Account>(account.accountId).get()),
+      map((snapshot) => (snapshot.exists ? snapshot.data() : undefined))
+    );
   }
 
   public deleteAccount(accountId: string): Observable<void> {

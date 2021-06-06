@@ -8,8 +8,8 @@ import { ConfirmationDialogComponent } from '../shared/confirmation-dialog/confi
 import { AccountDataSource } from './account-data-source';
 import {
   AccountDialogResult,
-  CreateAccountDialogComponent,
-} from './create-account-dialog/create-account-dialog.component';
+  CreateUpdateAccountDialogComponent,
+} from './create-update-account-dialog/create-update-account-dialog.component';
 
 @Component({
   selector: 'accounts',
@@ -32,16 +32,16 @@ export class AccountsComponent implements OnInit {
   }
 
   createAccount(): void {
-    const dialogRef = this.dialog.open(CreateAccountDialogComponent, {
+    const dialogRef = this.dialog.open(CreateUpdateAccountDialogComponent, {
       width: '400px',
       data: {
         account: {},
+        isCreate: true,
       },
     });
     dialogRef
       .afterClosed()
       .pipe(
-        tap(console.log),
         skipWhile((result: AccountDialogResult) => !result || !result.account),
         switchMap((result: AccountDialogResult) => this.accountService.createAccount(result.account))
       )
@@ -51,18 +51,38 @@ export class AccountsComponent implements OnInit {
       );
   }
 
-  deleteAccount(account: Account): void {
-    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+  updateAccount(account: Account): void {
+    const dialogRef = this.dialog.open(CreateUpdateAccountDialogComponent, {
       width: '400px',
       data: {
-        title: 'Confirm deleting account',
-        body: `Are you sure you want to delete ${account.name}?`
+        account: account,
+        isCreate: false,
       },
     });
     dialogRef
       .afterClosed()
       .pipe(
+        skipWhile((result: AccountDialogResult) => !result || !result.account),
         tap(console.log),
+        switchMap((result: AccountDialogResult) => this.accountService.updateAccount(result.account))
+      )
+      .subscribe(
+        (next) => console.log('account update', next),
+        (err) => console.log(err)
+      );
+  }
+
+  deleteAccount(account: Account): void {
+    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+      width: '400px',
+      data: {
+        title: 'Confirm deleting account',
+        body: `Are you sure you want to delete ${account.name}?`,
+      },
+    });
+    dialogRef
+      .afterClosed()
+      .pipe(
         skipWhile((result: AccountDialogResult) => !result),
         switchMap(() => this.accountService.deleteAccount(account.accountId!))
       )
@@ -70,7 +90,6 @@ export class AccountsComponent implements OnInit {
         () => console.log('account deleted'),
         (err) => console.log(err)
       );
-
   }
 
   dropTable(event: CdkDragDrop<any>): void {

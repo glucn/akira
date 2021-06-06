@@ -26,7 +26,7 @@ import { SidenavItemComponent } from './sidenav/sidenav-item/sidenav-item.compon
 import { SidenavService } from './sidenav/sidenav.service';
 import { ReportsComponent } from './reports/reports.component';
 import { AccountsComponent } from './accounts/accounts.component';
-import { CreateAccountDialogComponent } from './accounts/create-account-dialog/create-account-dialog.component';
+import { CreateUpdateAccountDialogComponent } from './accounts/create-update-account-dialog/create-update-account-dialog.component';
 import { ConfirmationDialogComponent } from './shared/confirmation-dialog/confirmation-dialog.component';
 
 @NgModule({
@@ -37,7 +37,7 @@ import { ConfirmationDialogComponent } from './shared/confirmation-dialog/confir
     SidenavItemComponent,
     ReportsComponent,
     AccountsComponent,
-    CreateAccountDialogComponent,
+    CreateUpdateAccountDialogComponent,
     ConfirmationDialogComponent,
   ],
   imports: [

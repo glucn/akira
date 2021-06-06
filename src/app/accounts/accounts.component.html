@@ -13,7 +13,7 @@
   <ng-container matColumnDef="reorder">
     <th mat-header-cell *matHeaderCellDef>Reorder</th>
     <td mat-cell *matCellDef="let account">
-      <mat-icon cdkDragHandle>reorder</mat-icon>
+      <mat-icon cdkDragHandle color="primary">reorder</mat-icon>
     </td>
     <td mat-footer-cell *matFooterCellDef></td>
   </ng-container>
@@ -50,12 +50,10 @@
 
   <!-- Button Column -->
   <ng-container matColumnDef="action">
-    <th mat-header-cell *matHeaderCellDef>Action</th>
+    <th mat-header-cell *matHeaderCellDef></th>
     <td mat-cell *matCellDef="let account">
-      <button mat-icon-button color="primary"><mat-icon>edit</mat-icon></button>
-      <button mat-icon-button color="primary" (click)="deleteAccount(account)">
-        <mat-icon>delete</mat-icon>
-      </button>
+      <button mat-icon-button color="primary" (click)="updateAccount(account)"><mat-icon>edit</mat-icon></button>
+      <button mat-icon-button color="primary" (click)="deleteAccount(account)"><mat-icon>delete</mat-icon></button>
     </td>
     <td mat-footer-cell *matFooterCellDef></td>
   </ng-container>

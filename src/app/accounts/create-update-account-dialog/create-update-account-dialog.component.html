@@ -1,0 +1,30 @@
+<h2 mat-dialog-title>{{ data.isCreate ? 'Create Account' : 'Update Account' }}</h2>
+<mat-dialog-content>
+  <mat-form-field>
+    <mat-label>Name</mat-label>
+    <input matInput cdkFocusInitial required [(ngModel)]="data.account.name" />
+  </mat-form-field>
+
+  <mat-form-field>
+    <mat-label>Currency</mat-label>
+    <mat-select required [(ngModel)]="data.account.currency">
+      <mat-option value="CAD">CAD (Canadian Dollar)</mat-option>
+      <mat-option value="CNY">CNY (Chinese Yuan)</mat-option>
+      <mat-option value="USD">USD (United States Dollar)</mat-option>
+    </mat-select>
+  </mat-form-field>
+
+  <mat-form-field>
+    <mat-label>Type</mat-label>
+    <mat-select required [(ngModel)]="data.account.type">
+      <mat-option value="Cash">Cash</mat-option>
+      <mat-option value="Bank">Bank</mat-option>
+      <mat-option value="Credit Card">Credit Card</mat-option>
+    </mat-select>
+  </mat-form-field>
+</mat-dialog-content>
+
+<div mat-dialog-actions>
+  <button mat-button [mat-dialog-close]="{ account: data.account }">OK</button>
+  <button mat-button (click)="cancel()">Cancel</button>
+</div>

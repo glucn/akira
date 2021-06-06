@@ -1,5 +1,5 @@
 import { DataSource } from '@angular/cdk/collections';
-import { Injectable } from "@angular/core";
+import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { Account, AccountService } from '../shared/account.service';
 
@@ -7,7 +7,6 @@ import { Account, AccountService } from '../shared/account.service';
   providedIn: 'root',
 })
 export class AccountDataSource extends DataSource<Account> {
-
   constructor(private accountService: AccountService) {
     super();
   }
@@ -16,5 +15,5 @@ export class AccountDataSource extends DataSource<Account> {
     return this.accountService.listAccounts();
   }
 
-  disconnect() { }
+  disconnect() {}
 }
