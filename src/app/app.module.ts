@@ -21,11 +21,13 @@ import { MatDialogModule } from '@angular/material/dialog';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { FormsModule } from '@angular/forms';
+import { DragDropModule } from '@angular/cdk/drag-drop';
 import { SidenavItemComponent } from './sidenav/sidenav-item/sidenav-item.component';
 import { SidenavService } from './sidenav/sidenav.service';
 import { ReportsComponent } from './reports/reports.component';
 import { AccountsComponent } from './accounts/accounts.component';
 import { CreateAccountDialogComponent } from './accounts/create-account-dialog/create-account-dialog.component';
+import { ConfirmationDialogComponent } from './shared/confirmation-dialog/confirmation-dialog.component';
 
 @NgModule({
   declarations: [
@@ -36,10 +38,12 @@ import { CreateAccountDialogComponent } from './accounts/create-account-dialog/c
     ReportsComponent,
     AccountsComponent,
     CreateAccountDialogComponent,
+    ConfirmationDialogComponent,
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
+    DragDropModule,
     MatButtonModule,
     MatDialogModule,
     MatDividerModule,

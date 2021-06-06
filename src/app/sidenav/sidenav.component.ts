@@ -6,17 +6,12 @@ import { SidenavItem, SidenavService } from './sidenav.service';
 @Component({
   selector: 'sidenav',
   templateUrl: './sidenav.component.html',
-  styleUrls: ['./sidenav.component.scss']
+  styleUrls: ['./sidenav.component.scss'],
 })
 export class SidenavComponent implements OnInit {
+  constructor(public auth: AngularFireAuth, private sidenavService: SidenavService) {}
 
-  constructor(
-    public auth: AngularFireAuth,
-    private sidenavService: SidenavService,
-    ) { }
-
-  ngOnInit(): void {
-  }
+  ngOnInit(): void {}
 
   getSideNavItems(): SidenavItem[] {
     return this.sidenavService.navItems;
@@ -29,5 +24,4 @@ export class SidenavComponent implements OnInit {
   logout() {
     this.auth.signOut();
   }
-
 }
