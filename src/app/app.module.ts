@@ -5,7 +5,7 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { environment } from 'src/environments/environment';
 import { AngularFireModule } from '@angular/fire';
-import { SETTINGS as AUTH_SETTINGS } from '@angular/fire/auth';
+import { AngularFireAuthModule, SETTINGS as AUTH_SETTINGS } from '@angular/fire/auth';
 import { AngularFirestoreModule } from '@angular/fire/firestore';
 import { OverviewComponent } from './overview/overview.component';
 import { MatToolbarModule } from '@angular/material/toolbar';
@@ -55,6 +55,7 @@ import { ConfirmationDialogComponent } from './shared/confirmation-dialog/confir
     MatTableModule,
     MatToolbarModule,
     AngularFireModule.initializeApp(environment.firebase),
+    AngularFireAuthModule,
     AngularFirestoreModule,
     FormsModule,
     BrowserAnimationsModule,
