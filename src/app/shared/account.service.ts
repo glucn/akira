@@ -83,7 +83,7 @@ export class AccountService {
 
           return Promise.all([accountPromise, accountsOrderingPromise]).then(([acc, ordering]) => {
             if (acc.exists) {
-              throw `Account ${account.accountId} already exists`;
+              throw `Account ${accountId} already exists`;
             }
             t.set(accountDoc.ref, {
               name: account.name,
@@ -133,6 +133,33 @@ export class AccountService {
   }
 
   public deleteAccount(accountId: string): Observable<void> {
-    return this.accountCollectionRef$.pipe(switchMap((ref) => ref.doc(accountId).delete()));
+    return combineLatest([this.accountCollectionRef$, this.accountsOrderingCollectionRef$, this.auth.user]).pipe(
+      switchMap(([ref, orderingRef, user]) => {
+        if (!user) {
+          throw 'User is null or undefined'; // TODO: find a better way to handle null
+        }
+
+        var accountDoc = ref.doc(accountId);
+        var accountsOrderingDoc = orderingRef.doc(user.uid);
+
+        return firebase.firestore().runTransaction((t) => {
+          var accountPromise = t.get(accountDoc.ref);
+          var accountsOrderingPromise = t.get(accountsOrderingDoc.ref);
+
+          return Promise.all([accountPromise, accountsOrderingPromise]).then(([acc, ordering]) => {
+            if (!acc.exists) {
+              throw `Account ${accountId} does not exist`;
+            }
+            t.delete(accountDoc.ref);
+
+            if (ordering.exists) {
+              t.update(accountsOrderingDoc.ref, {
+                accountIds: firebase.firestore.FieldValue.arrayRemove(accountId),
+              });
+            }
+          });
+        });
+      })
+    );
   }
 }
