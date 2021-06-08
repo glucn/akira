@@ -180,4 +180,33 @@ export class AccountService {
       })
     );
   }
+
+  // This function is not safe for concurrent operation
+  public moveAccountOrdering(fromIndex: number, toIndex: number): Observable<void> {
+    return combineLatest([this.accountsOrderingCollectionRef$, this.auth.user]).pipe(
+      switchMap(([orderingRef, user]) => {
+        if (!user) {
+          throw 'User is null or undefined'; // TODO: find a better way to handle null
+        }
+
+        var accountsOrderingDoc = orderingRef.doc(user.uid);
+
+        return firebase.firestore().runTransaction((t) => {
+          return t.get(accountsOrderingDoc.ref).then((ordering) => {
+            if (ordering.exists) {
+              var newOrdering: string[] = [...ordering.data()!.accountIds]; // copy the array
+              // TODO: validate fromIndex and toIndex
+              var accountToMove: string = newOrdering[fromIndex];
+              newOrdering.splice(fromIndex, 1);
+              newOrdering.splice(toIndex, 0, accountToMove);
+
+              t.set(accountsOrderingDoc.ref, {
+                accountIds: newOrdering,
+              });
+            }
+          });
+        });
+      })
+    );
+  }
 }

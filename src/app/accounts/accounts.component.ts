@@ -2,13 +2,13 @@ import { CdkDragDrop } from '@angular/cdk/drag-drop';
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatTable } from '@angular/material/table';
-import { skipWhile, switchMap, tap } from 'rxjs/operators';
+import { skipWhile, switchMap } from 'rxjs/operators';
 import { Account, AccountService } from '../shared/account.service';
 import { ConfirmationDialogComponent } from '../shared/confirmation-dialog/confirmation-dialog.component';
 import { AccountDataSource } from './account-data-source';
 import {
   AccountDialogResult,
-  CreateUpdateAccountDialogComponent,
+  CreateUpdateAccountDialogComponent
 } from './create-update-account-dialog/create-update-account-dialog.component';
 
 @Component({
@@ -91,8 +91,10 @@ export class AccountsComponent implements OnInit {
       );
   }
 
-  dropTable(event: CdkDragDrop<any>): void {
-    console.log('dropTable', event);
-    this.table.renderRows();
+  dropTable(event: CdkDragDrop<AccountDataSource>): void {
+    this.accountService.moveAccountOrdering(event.previousIndex, event.currentIndex).subscribe(
+      () => console.log('account moved'),
+      (err) => console.log(err)
+    );
   }
 }
