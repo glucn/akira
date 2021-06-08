@@ -54,8 +54,26 @@ export class AccountService {
   }
 
   public listAccounts(): Observable<Account[]> {
-    return this.accountCollectionRef$.pipe(
+    var accounts$ = this.accountCollectionRef$.pipe(
       switchMap((ref) => (ref ? ref.valueChanges({ idField: 'accountId' }) : of([])))
+    );
+
+    var ordering$: Observable<string[]> = combineLatest([this.accountsOrderingCollectionRef$, this.auth.user]).pipe(
+      switchMap(([ordering, user]) => {
+        if (!user) {
+          throw 'User is null or undefined'; // TODO: find a better way to handle null
+        }
+
+        return ordering.doc(user.uid).valueChanges();
+      }),
+      skipWhile((ordering) => !ordering),
+      map((ordering) => ordering!.accountIds)
+    );
+
+    return combineLatest([accounts$, ordering$]).pipe(
+      map(([accounts, ordering]) =>
+        accounts.sort((a, b) => ordering.indexOf(a.accountId) - ordering.indexOf(b.accountId))
+      )
     );
   }
 
