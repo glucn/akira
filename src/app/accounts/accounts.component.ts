@@ -3,8 +3,8 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatTable } from '@angular/material/table';
 import { skipWhile, switchMap } from 'rxjs/operators';
-import { Account, AccountService } from '../shared/account.service';
-import { ConfirmationDialogComponent } from '../shared/confirmation-dialog/confirmation-dialog.component';
+import { Account, AccountService } from 'src/app/shared/account.service';
+import { ConfirmationDialogComponent } from 'src/app/shared/confirmation-dialog/confirmation-dialog.component';
 import { AccountDataSource } from './account-data-source';
 import {
   AccountDialogResult,

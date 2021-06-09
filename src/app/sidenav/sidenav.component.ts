@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { AngularFireAuth } from '@angular/fire/auth';
 import firebase from 'firebase/app';
+import { Observable } from 'rxjs';
 import { SidenavItem, SidenavService } from './sidenav.service';
 
 @Component({
@@ -9,13 +10,13 @@ import { SidenavItem, SidenavService } from './sidenav.service';
   styleUrls: ['./sidenav.component.scss'],
 })
 export class SidenavComponent implements OnInit {
-  constructor(public auth: AngularFireAuth, private sidenavService: SidenavService) {}
+  public sideNavItems$: Observable<SidenavItem[]>;
+
+  constructor(public auth: AngularFireAuth, private sidenavService: SidenavService) {
+    this.sideNavItems$ = this.sidenavService.getSideNavItems$();
+  }
 
   ngOnInit(): void {}
-
-  getSideNavItems(): SidenavItem[] {
-    return this.sidenavService.navItems;
-  }
 
   login() {
     this.auth.signInWithPopup(new firebase.auth.GoogleAuthProvider());

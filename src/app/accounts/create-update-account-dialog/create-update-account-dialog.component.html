@@ -17,9 +17,7 @@
   <mat-form-field>
     <mat-label>Type</mat-label>
     <mat-select required [(ngModel)]="data.account.type">
-      <mat-option value="Cash">Cash</mat-option>
-      <mat-option value="Bank">Bank</mat-option>
-      <mat-option value="Credit Card">Credit Card</mat-option>
+      <mat-option *ngFor="let type of accountTypes$ | async" [value]="type.value">{{ type.displayName }}</mat-option>
     </mat-select>
   </mat-form-field>
 </mat-dialog-content>
