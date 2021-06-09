@@ -8,7 +8,7 @@ import { v4 as uuidv4 } from 'uuid';
 
 export interface Account {
   accountId?: string;
-  userId: string;
+  userId?: string;
   name: string;
   currency: string;
   type: string;

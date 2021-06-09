@@ -1,0 +1,27 @@
+:host {
+  width: 100%;
+}
+
+.account-detail-header-title {
+  display: flex;
+  align-items: center;
+  padding-bottom: 8px;
+}
+
+.account-detail-header-icon {
+  padding: 0 8px;
+}
+
+.account-detail-header-name {
+  font-size: 28px;
+}
+
+.account-detail-header-info {
+  display: flex;
+  padding-left: 40px;
+  width: 80%;
+}
+
+.account-detail-header-info-item {
+  flex: 1;
+}

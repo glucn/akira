@@ -1,0 +1,16 @@
+<div *ngIf="account$ | async as account">
+  <div class="account-detail-header">
+    <div class="account-detail-header-title">
+      <mat-icon class="account-detail-header-icon">{{accountIcon$ | async}}</mat-icon>
+      <div class="account-detail-header-name">{{ account.name }}</div>
+    </div>
+    <div class="account-detail-header-info">
+      <div class="account-detail-header-info-item">Balance: {{account.balance || 0}}</div>
+      <div class="account-detail-header-info-item">Currency: {{account.currency}}</div>
+      <div class="account-detail-header-info-item">Type: {{account.type}}</div>
+    </div>
+
+  </div>
+  <div class="account-detail-transactions"></div>
+  <div class="account-detail-footer"></div>
+</div>
