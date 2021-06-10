@@ -1,15 +1,15 @@
 import { CdkDragDrop } from '@angular/cdk/drag-drop';
-import { ChangeDetectionStrategy, Pipe, PipeTransform } from '@angular/core';
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, Pipe, PipeTransform, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatTable } from '@angular/material/table';
 import { skipWhile, switchMap } from 'rxjs/operators';
-import { Account, AccountService } from 'src/app/shared/account.service';
-import { ConfirmationDialogComponent } from 'src/app/shared/confirmation-dialog/confirmation-dialog.component';
+import { getAccountUrl } from '../shared/account-utils';
+import { Account, AccountService } from '../shared/account.service';
+import { ConfirmationDialogComponent } from '../shared/confirmation-dialog/confirmation-dialog.component';
 import { AccountDataSource } from './account-data-source';
 import {
   AccountDialogResult,
-  CreateUpdateAccountDialogComponent
+  CreateUpdateAccountDialogComponent,
 } from './create-update-account-dialog/create-update-account-dialog.component';
 
 @Component({
@@ -101,12 +101,11 @@ export class AccountsComponent implements OnInit {
   }
 }
 
-
 @Pipe({
-  name: 'accountLink'
+  name: 'accountLink',
 })
 export class AccountLinkPipe implements PipeTransform {
   transform(account: Account): string {
-    return `/account/${account.accountId}`;
+    return getAccountUrl(account);
   }
 }
