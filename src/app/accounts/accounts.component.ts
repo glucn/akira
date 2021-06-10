@@ -1,4 +1,5 @@
 import { CdkDragDrop } from '@angular/cdk/drag-drop';
+import { ChangeDetectionStrategy, Pipe, PipeTransform } from '@angular/core';
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatTable } from '@angular/material/table';
@@ -15,6 +16,7 @@ import {
   selector: 'accounts',
   templateUrl: './accounts.component.html',
   styleUrls: ['./accounts.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AccountsComponent implements OnInit {
   @ViewChild('table') table!: MatTable<Account>;
@@ -96,5 +98,15 @@ export class AccountsComponent implements OnInit {
       () => console.log('account moved'),
       (err) => console.log(err)
     );
+  }
+}
+
+
+@Pipe({
+  name: 'accountLink'
+})
+export class AccountLinkPipe implements PipeTransform {
+  transform(account: Account): string {
+    return `/account/${account.accountId}`;
   }
 }

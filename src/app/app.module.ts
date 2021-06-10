@@ -17,7 +17,7 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { environment } from 'src/environments/environment';
-import { AccountsComponent } from './accounts/accounts.component';
+import { AccountLinkPipe, AccountsComponent } from './accounts/accounts.component';
 import { CreateUpdateAccountDialogComponent } from './accounts/create-update-account-dialog/create-update-account-dialog.component';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -40,6 +40,7 @@ import { AccountDetailComponent } from './account-detail/account-detail.componen
     CreateUpdateAccountDialogComponent,
     ConfirmationDialogComponent,
     AccountDetailComponent,
+    AccountLinkPipe,
   ],
   imports: [
     BrowserModule,
