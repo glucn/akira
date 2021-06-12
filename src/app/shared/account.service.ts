@@ -3,7 +3,7 @@ import { AngularFireAuth } from '@angular/fire/auth';
 import { AngularFirestore, AngularFirestoreCollection } from '@angular/fire/firestore';
 import firebase from 'firebase/app';
 import { combineLatest, Observable, of } from 'rxjs';
-import { map, skipWhile, switchMap } from 'rxjs/operators';
+import { map, shareReplay, skipWhile, switchMap } from 'rxjs/operators';
 import { v4 as uuidv4 } from 'uuid';
 
 export interface Account {
@@ -30,16 +30,17 @@ export class AccountService {
   accountCollectionRef$: Observable<AngularFirestoreCollection<Account>>;
   accountsOrderingCollectionRef$: Observable<AngularFirestoreCollection<AccountsOrdering>>;
 
-  constructor(private afs: AngularFirestore, private auth: AngularFireAuth) {
+  constructor(private readonly afs: AngularFirestore, private auth: AngularFireAuth) {
+    // firebase.setLogLevel('debug');
     this.accountCollectionRef$ = this.auth.user.pipe(
       skipWhile((user) => !user || user == null),
       map((user): AngularFirestoreCollection<Account> => {
         if (!user) {
           throw 'User is null or undefined'; // TODO: find a better way to handle null
         }
-        console.log(user.uid);
         return this.afs.collection('account', (ref) => ref.where('userId', '==', user.uid));
-      })
+      }),
+      shareReplay(1)
     );
 
     this.accountsOrderingCollectionRef$ = this.auth.user.pipe(
@@ -48,8 +49,9 @@ export class AccountService {
         if (!user) {
           throw 'User is null or undefined'; // TODO: find a better way to handle null
         }
-        return this.afs.collection('accountOrdering');
-      })
+        return <AngularFirestoreCollection<AccountsOrdering>>this.afs.collection('accountOrdering');
+      }),
+      shareReplay(1)
     );
   }
 
