@@ -3,8 +3,9 @@ import { Component, Injectable, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { combineLatest, Observable, of } from 'rxjs';
 import { map, switchMap } from 'rxjs/operators';
-import { Account, AccountService } from 'src/app/shared/account.service';
 import { DEFAULT_ICON, getAccountTypes$ } from '../shared/account-type';
+import { Account, AccountService } from '../shared/account.service';
+import { Transaction } from '../shared/transaction.service';
 
 @Component({
   selector: 'app-account-detail',
@@ -40,15 +41,6 @@ export class AccountDetailComponent implements OnInit {
   }
 
   ngOnInit(): void {}
-}
-
-export interface Transaction {
-  transactionDate: Date;
-  postingDate: Date;
-  type: string;
-  amount: number;
-  description: string;
-  balance: number;
 }
 
 @Injectable({

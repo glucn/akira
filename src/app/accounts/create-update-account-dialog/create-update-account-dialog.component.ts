@@ -1,8 +1,8 @@
 import { Component, Inject, OnInit } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { Observable } from 'rxjs';
-import { AccountType, getAccountTypes$ } from 'src/app/shared/account-type';
-import { Account } from 'src/app/shared/account.service';
+import { AccountType, getAccountTypes$ } from '../../shared/account-type';
+import { Account } from '../../shared/account.service';
 
 export interface AccountDialogData {
   account: Partial<Account>;

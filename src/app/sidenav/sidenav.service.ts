@@ -3,9 +3,9 @@ import { MatDrawer } from '@angular/material/sidenav';
 import { Event, NavigationEnd, Router } from '@angular/router';
 import { BehaviorSubject, combineLatest, Observable } from 'rxjs';
 import { distinctUntilChanged, map } from 'rxjs/operators';
-import { AccountType, DEFAULT_ICON, getAccountTypes$ } from 'src/app/shared/account-type';
-import { Account, AccountService } from 'src/app/shared/account.service';
+import { AccountType, DEFAULT_ICON, getAccountTypes$ } from '../shared/account-type';
 import { getAccountUrl } from '../shared/account-utils';
+import { Account, AccountService } from '../shared/account.service';
 
 export interface SidenavItem {
   displayName: string;

@@ -2,7 +2,7 @@ import { DragDropModule } from '@angular/cdk/drag-drop';
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { AngularFireModule } from '@angular/fire';
-import { AngularFireAuthModule, PERSISTENCE, SETTINGS as AUTH_SETTINGS } from '@angular/fire/auth';
+import { AngularFireAuthModule, PERSISTENCE as AUTH_PERSISTENCE, SETTINGS as AUTH_SETTINGS } from '@angular/fire/auth';
 import { AngularFirestoreModule } from '@angular/fire/firestore';
 import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
@@ -68,7 +68,7 @@ import { SidenavService } from './sidenav/sidenav.service';
   ],
   providers: [
     { provide: AUTH_SETTINGS, useValue: { appVerificationDisabledForTesting: true } },
-    { provide: PERSISTENCE, useValue: 'session' },
+    { provide: AUTH_PERSISTENCE, useValue: 'session' },
     SidenavService,
   ],
   bootstrap: [AppComponent],
