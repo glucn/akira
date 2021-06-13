@@ -3,6 +3,10 @@ import { Injectable } from '@angular/core';
 export interface Transaction {
   accountId?: string;
   transactionId?: string;
+  connectedTransaction?: {
+    accountId?: string;
+    transactionId?: string;
+  };
   transactionDate: Date;
   postingDate: Date;
   type: string;

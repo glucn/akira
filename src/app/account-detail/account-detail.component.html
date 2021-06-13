@@ -4,74 +4,77 @@
       <mat-icon>{{ accountIcon$ | async }}</mat-icon>
       <div>{{ account.name }}</div>
       <mat-divider [vertical]="true" class="vertical-divider"></mat-divider>
-      <div>{{ (account.balance || 0) | currency: account.currency }}</div>
+      <div>{{ account.balance || 0 | currency: account.currency }}</div>
     </div>
   </div>
   <div class="account-detail-body">
     <mat-tab-group>
       <mat-tab label="Transactions">
-        <table
-          class="transactions-table"
-          mat-table
-          #table
-          [dataSource]="transactionDataSource"
-          class="transactions-table"
-        >
+        <div style="display: flex; margin: 8px 0; gap: 8px; align-items: baseline">
+          <button mat-raised-button color="primary">Add Transaction</button>
+          <button mat-raised-button>Import</button>
+          <button mat-raised-button>Export</button>
+          <mat-paginator [pageSizeOptions]="[10, 20, 50]" style="flex: 1"></mat-paginator>
+        </div>
+        <table class="transactions-table" mat-table [dataSource]="transactionDataSource">
           <!-- Transaction Date Column -->
           <ng-container matColumnDef="transactionDate">
             <th mat-header-cell *matHeaderCellDef>Transaction Date</th>
             <td mat-cell *matCellDef="let transaction">{{ transaction.transactionDate | date }}</td>
-            <td mat-footer-cell *matFooterCellDef></td>
           </ng-container>
 
           <!-- Posting Date Column -->
           <ng-container matColumnDef="postingDate">
             <th mat-header-cell *matHeaderCellDef>Posting Date</th>
             <td mat-cell *matCellDef="let transaction">{{ transaction.postingDate | date }}</td>
-            <td mat-footer-cell *matFooterCellDef></td>
           </ng-container>
 
           <!-- Type Column -->
           <ng-container matColumnDef="type">
             <th mat-header-cell *matHeaderCellDef>Type</th>
             <td mat-cell *matCellDef="let transaction">{{ transaction.type }}</td>
-            <td mat-footer-cell *matFooterCellDef></td>
           </ng-container>
 
           <!-- Amount Column -->
           <ng-container matColumnDef="amount">
             <th mat-header-cell *matHeaderCellDef>Amount</th>
-            <td mat-cell *matCellDef="let transaction">{{ transaction.amount | currency: account.currency:'symbol-narrow' }}</td>
-            <td mat-footer-cell *matFooterCellDef></td>
+            <td mat-cell *matCellDef="let transaction">
+              {{ transaction.amount | currency: account.currency:'symbol-narrow' }}
+            </td>
           </ng-container>
 
           <!-- Description Column -->
           <ng-container matColumnDef="description">
             <th mat-header-cell *matHeaderCellDef>Description</th>
             <td mat-cell *matCellDef="let transaction">{{ transaction.description }}</td>
-            <td mat-footer-cell *matFooterCellDef></td>
           </ng-container>
 
           <!-- Balance Column -->
           <ng-container matColumnDef="balance">
             <th mat-header-cell *matHeaderCellDef>Balance</th>
-            <td mat-cell *matCellDef="let transaction">{{ transaction.balance | currency: account.currency:'symbol-narrow' }}</td>
-            <td mat-footer-cell *matFooterCellDef></td>
+            <td mat-cell *matCellDef="let transaction">
+              {{ transaction.balance | currency: account.currency:'symbol-narrow' }}
+            </td>
           </ng-container>
 
           <!-- Button Column -->
           <ng-container matColumnDef="action">
             <th mat-header-cell *matHeaderCellDef></th>
             <td mat-cell *matCellDef="let transaction">
-              <button mat-icon-button color="primary"><mat-icon>edit</mat-icon></button>
-              <button mat-icon-button color="primary"><mat-icon>delete</mat-icon></button>
+              <button mat-icon-button color="primary" [matMenuTriggerFor]="moreActions">
+                <mat-icon>more_vert</mat-icon>
+              </button>
+              <mat-menu #moreActions="matMenu">
+                <button mat-menu-item>Edit</button>
+                <button mat-menu-item>Move Up (Same Day)</button>
+                <button mat-menu-item>Move Down (Same Day)</button>
+                <button mat-menu-item>Delete</button>
+              </mat-menu>
             </td>
-            <td mat-footer-cell *matFooterCellDef></td>
           </ng-container>
 
-          <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
           <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
-          <tr mat-footer-row *matFooterRowDef="displayedColumns; sticky: true"></tr>
         </table>
       </mat-tab>
       <mat-tab label="Account Detail"> TODO </mat-tab>

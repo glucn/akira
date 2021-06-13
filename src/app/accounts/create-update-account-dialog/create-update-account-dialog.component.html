@@ -23,6 +23,6 @@
 </mat-dialog-content>
 
 <div mat-dialog-actions>
-  <button mat-button [mat-dialog-close]="{ account: data.account }">OK</button>
+  <button mat-raised-button [mat-dialog-close]="{ account: data.account }" color="primary">OK</button>
   <button mat-button (click)="cancel()">Cancel</button>
 </div>
