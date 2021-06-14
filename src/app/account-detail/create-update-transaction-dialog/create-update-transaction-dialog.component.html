@@ -1,0 +1,68 @@
+<h2 mat-dialog-title>{{ data.isCreate ? 'Create Transaction' : 'Update Transaction' }}</h2>
+<mat-dialog-content>
+  <mat-form-field>
+    <mat-label>Type</mat-label>
+    <!-- TODO: change this field to mat-select -->
+    <input matInput cdkFocusInitial required [(ngModel)]="data.transaction.type" #type="ngModel" />
+  </mat-form-field>
+
+  <mat-form-field>
+    <mat-label>Amount</mat-label>
+    <input matInput required [(ngModel)]="data.transaction.amount" type="number" #amount="ngModel" />
+  </mat-form-field>
+
+  <mat-form-field>
+    <mat-label>Transaction Date</mat-label>
+    <input
+      matInput
+      required
+      [matDatepicker]="transactionDatePicker"
+      [(ngModel)]="data.transaction.transactionDate"
+      #transactionDate="ngModel"
+    />
+    <mat-datepicker-toggle matSuffix [for]="transactionDatePicker"></mat-datepicker-toggle>
+    <mat-datepicker #transactionDatePicker></mat-datepicker>
+  </mat-form-field>
+
+  <!-- TODO: provide option to say PostingDate is the same with TransactionDate -->
+  <mat-form-field>
+    <mat-label>Posting Date</mat-label>
+    <input
+      matInput
+      required
+      [matDatepicker]="postingDatePicker"
+      [(ngModel)]="data.transaction.postingDate"
+      #postingDate="ngModel"
+    />
+    <mat-datepicker-toggle matSuffix [for]="postingDatePicker"></mat-datepicker-toggle>
+    <mat-datepicker #postingDatePicker></mat-datepicker>
+  </mat-form-field>
+
+  <mat-form-field>
+    <mat-label>Description</mat-label>
+    <input matInput [(ngModel)]="data.transaction.description" />
+  </mat-form-field>
+
+  <mat-form-field>
+    <mat-label>Currency</mat-label>
+    <mat-select required [(ngModel)]="data.transaction.currency" #currency="ngModel">
+      <mat-option value="CAD">CAD (Canadian Dollar)</mat-option>
+      <mat-option value="CNY">CNY (Chinese Yuan)</mat-option>
+      <mat-option value="USD">USD (United States Dollar)</mat-option>
+    </mat-select>
+  </mat-form-field>
+
+  <div mat-dialog-actions>
+    <button
+      mat-raised-button
+      [mat-dialog-close]="{ transaction: data.transaction }"
+      color="primary"
+      [disabled]="
+        !!type.errors || !!amount.errors || !!transactionDate.errors || !!postingDate.errors || !!currency.errors
+      "
+    >
+      OK
+    </button>
+    <button mat-button (click)="cancel()">Cancel</button>
+  </div>
+</mat-dialog-content>

@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { Observable, of } from 'rxjs';
 
 export interface Transaction {
   accountId?: string;
@@ -21,4 +22,8 @@ export interface Transaction {
 @Injectable({
   providedIn: 'root',
 })
-export class TransactionService {}
+export class TransactionService {
+  public createTransaction(transaction: Transaction): Observable<Transaction> {
+    return of(transaction);
+  }
+}

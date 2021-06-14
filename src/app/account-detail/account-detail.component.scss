@@ -14,6 +14,17 @@
   height: 32px;
 }
 
+.transactio-actions {
+  display: flex;
+  margin: 8px 0;
+  gap: 8px;
+  align-items: baseline;
+}
+
 .transactions-table {
   width: 100%;
+}
+
+.transactions-table-paginator {
+  flex: 1;
 }

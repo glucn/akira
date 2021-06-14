@@ -10,11 +10,11 @@
   <div class="account-detail-body">
     <mat-tab-group>
       <mat-tab label="Transactions">
-        <div style="display: flex; margin: 8px 0; gap: 8px; align-items: baseline">
-          <button mat-raised-button color="primary">Add Transaction</button>
+        <div class="transactio-actions">
+          <button mat-raised-button color="primary" (click)="createTransaction()">Add Transaction</button>
           <button mat-raised-button>Import</button>
           <button mat-raised-button>Export</button>
-          <mat-paginator [pageSizeOptions]="[10, 20, 50]" style="flex: 1"></mat-paginator>
+          <mat-paginator [pageSizeOptions]="[10, 20, 50]" class="transactions-table-paginator"></mat-paginator>
         </div>
         <table class="transactions-table" mat-table [dataSource]="transactionDataSource">
           <!-- Transaction Date Column -->

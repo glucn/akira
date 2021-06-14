@@ -4,8 +4,10 @@ import { NgModule } from '@angular/core';
 import { AngularFireModule } from '@angular/fire';
 import { AngularFireAuthModule, PERSISTENCE as AUTH_PERSISTENCE, SETTINGS as AUTH_SETTINGS } from '@angular/fire/auth';
 import { AngularFirestoreModule } from '@angular/fire/firestore';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
+import { MatNativeDateModule } from '@angular/material/core';
+import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatIconModule } from '@angular/material/icon';
@@ -22,6 +24,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { environment } from 'src/environments/environment';
 import { AccountDetailComponent } from './account-detail/account-detail.component';
+import { CreateUpdateTransactionDialogComponent } from './account-detail/create-update-transaction-dialog/create-update-transaction-dialog.component';
 import { AccountLinkPipe, AccountsComponent } from './accounts/accounts.component';
 import { CreateUpdateAccountDialogComponent } from './accounts/create-update-account-dialog/create-update-account-dialog.component';
 import { AppRoutingModule } from './app-routing.module';
@@ -45,6 +48,7 @@ import { SidenavService } from './sidenav/sidenav.service';
     ConfirmationDialogComponent,
     AccountDetailComponent,
     AccountLinkPipe,
+    CreateUpdateTransactionDialogComponent,
   ],
   imports: [
     BrowserModule,
@@ -52,6 +56,8 @@ import { SidenavService } from './sidenav/sidenav.service';
     DragDropModule,
     CommonModule,
     MatButtonModule,
+    MatDatepickerModule,
+    MatNativeDateModule,
     MatDialogModule,
     MatDividerModule,
     MatIconModule,
@@ -64,6 +70,7 @@ import { SidenavService } from './sidenav/sidenav.service';
     MatTableModule,
     MatTabsModule,
     MatToolbarModule,
+    ReactiveFormsModule,
     AngularFireModule.initializeApp(environment.firebase),
     AngularFireAuthModule,
     AngularFirestoreModule,

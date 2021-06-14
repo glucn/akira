@@ -1,12 +1,17 @@
 import { Component, Injectable, OnInit, ViewChild } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatTableDataSource } from '@angular/material/table';
 import { ActivatedRoute } from '@angular/router';
 import { BehaviorSubject, combineLatest, Observable } from 'rxjs';
-import { map, switchMap } from 'rxjs/operators';
+import { map, skipWhile, switchMap } from 'rxjs/operators';
 import { DEFAULT_ICON, getAccountTypes$ } from '../shared/account-type';
 import { Account, AccountService } from '../shared/account.service';
-import { Transaction } from '../shared/transaction.service';
+import { Transaction, TransactionService } from '../shared/transaction.service';
+import {
+  CreateUpdateTransactionDialogComponent,
+  TransactionDialogResult,
+} from './create-update-transaction-dialog/create-update-transaction-dialog.component';
 
 @Component({
   selector: 'app-account-detail',
@@ -29,7 +34,12 @@ export class AccountDetailComponent implements OnInit {
 
   transactionDataSource = new MatTableDataSource<Transaction>(getData());
 
-  constructor(private route: ActivatedRoute, private accountService: AccountService) {
+  constructor(
+    private route: ActivatedRoute,
+    private accountService: AccountService,
+    private transactionService: TransactionService,
+    private dialog: MatDialog
+  ) {
     this.accountId$ = this.route.params.pipe(map((params) => params.id));
 
     this.account$ = this.accountId$.pipe(
@@ -48,6 +58,30 @@ export class AccountDetailComponent implements OnInit {
   }
 
   ngOnInit(): void {}
+
+  createTransaction(): void {
+    const now = new Date();
+    const dialogRef = this.dialog.open(CreateUpdateTransactionDialogComponent, {
+      width: '400px',
+      data: {
+        transaction: {
+          transactionDate: now,
+          postingDate: now,
+        },
+        isCreate: true,
+      },
+    });
+    dialogRef
+      .afterClosed()
+      .pipe(
+        skipWhile((result: TransactionDialogResult) => !result || !result.transaction),
+        switchMap((result: TransactionDialogResult) => this.transactionService.createTransaction(result.transaction))
+      )
+      .subscribe(
+        (next) => console.log('transaction created', next),
+        (err) => console.log(err)
+      );
+  }
 }
 
 function getData(): Transaction[] {
