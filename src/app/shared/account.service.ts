@@ -45,11 +45,11 @@ export class AccountService {
 
     this.accountsOrderingCollectionRef$ = this.auth.user.pipe(
       skipWhile((user) => !user || user == null),
-      map((user) => {
+      map((user): AngularFirestoreCollection<AccountsOrdering> => {
         if (!user) {
           throw 'User is null or undefined'; // TODO: find a better way to handle null
         }
-        return <AngularFirestoreCollection<AccountsOrdering>>this.afs.collection('accountOrdering');
+        return this.afs.collection('accountOrdering');
       }),
       shareReplay(1)
     );
@@ -82,7 +82,8 @@ export class AccountService {
   public getAccount(accountId: string): Observable<Account | undefined> {
     return this.accountCollectionRef$.pipe(
       switchMap((collection: AngularFirestoreCollection<Account>) => collection.doc<Account>(accountId).get()),
-      map((snapshot) => (snapshot.exists ? snapshot.data() : undefined))
+      map((snapshot) => (snapshot.exists ? snapshot.data() : undefined)),
+      map((account) => (account ? { ...account, accountId: accountId } : undefined))
     );
   }
 

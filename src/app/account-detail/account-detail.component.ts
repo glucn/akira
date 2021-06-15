@@ -1,16 +1,16 @@
-import { Component, Injectable, OnInit, ViewChild } from '@angular/core';
+import { Component, Injectable, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatTableDataSource } from '@angular/material/table';
 import { ActivatedRoute } from '@angular/router';
-import { BehaviorSubject, combineLatest, Observable } from 'rxjs';
-import { map, skipWhile, switchMap } from 'rxjs/operators';
+import { BehaviorSubject, combineLatest, Observable, Subject } from 'rxjs';
+import { map, skipWhile, switchMap, takeUntil } from 'rxjs/operators';
 import { DEFAULT_ICON, getAccountTypes$ } from '../shared/account-type';
 import { Account, AccountService } from '../shared/account.service';
 import { Transaction, TransactionService } from '../shared/transaction.service';
 import {
   CreateUpdateTransactionDialogComponent,
-  TransactionDialogResult,
+  TransactionDialogResult
 } from './create-update-transaction-dialog/create-update-transaction-dialog.component';
 
 @Component({
@@ -18,7 +18,7 @@ import {
   templateUrl: './account-detail.component.html',
   styleUrls: ['./account-detail.component.scss'],
 })
-export class AccountDetailComponent implements OnInit {
+export class AccountDetailComponent implements OnInit, OnDestroy {
   // The MatPaginator inside of *ngIf cannot be picked up until DOM is rendered, this is the workaround
   // https://github.com/angular/components/issues/10205
   @ViewChild(MatPaginator) set paginator(paginator: MatPaginator) {
@@ -33,6 +33,8 @@ export class AccountDetailComponent implements OnInit {
   displayedColumns: string[] = ['transactionDate', 'postingDate', 'type', 'amount', 'description', 'balance', 'action'];
 
   transactionDataSource = new MatTableDataSource<Transaction>(getData());
+
+  private ngUnsubscribe = new Subject();
 
   constructor(
     private route: ActivatedRoute,
@@ -49,7 +51,8 @@ export class AccountDetailComponent implements OnInit {
           throw 'Account does not exist'; // TODO: Show something in the UI
         }
         return account;
-      })
+      }),
+      skipWhile((account) => !account)
     );
 
     this.accountIcon$ = combineLatest([this.account$, getAccountTypes$()]).pipe(
@@ -59,23 +62,38 @@ export class AccountDetailComponent implements OnInit {
 
   ngOnInit(): void {}
 
+  ngOnDestroy() {
+    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.complete();
+  }
+
   createTransaction(): void {
     const now = new Date();
-    const dialogRef = this.dialog.open(CreateUpdateTransactionDialogComponent, {
-      width: '400px',
-      data: {
-        transaction: {
-          transactionDate: now,
-          postingDate: now,
-        },
-        isCreate: true,
-      },
-    });
-    dialogRef
-      .afterClosed()
+
+    const dialogOutput$: Observable<TransactionDialogResult> = this.account$.pipe(
+      map((account) =>
+        this.dialog.open(CreateUpdateTransactionDialogComponent, {
+          width: '400px',
+          data: {
+            transaction: {
+              transactionDate: now,
+              postingDate: now,
+              currency: account.currency,
+            },
+            isCreate: true,
+          },
+        })
+      ),
+      switchMap((dialog) => dialog.afterClosed()),
+      skipWhile((result: TransactionDialogResult) => !result || !result.transaction)
+    );
+
+    combineLatest([this.account$, dialogOutput$])
       .pipe(
-        skipWhile((result: TransactionDialogResult) => !result || !result.transaction),
-        switchMap((result: TransactionDialogResult) => this.transactionService.createTransaction(result.transaction))
+        switchMap(([account, result]) =>
+          this.transactionService.createTransaction({ ...result.transaction, accountId: account.accountId })
+        ),
+        takeUntil(this.ngUnsubscribe)
       )
       .subscribe(
         (next) => console.log('transaction created', next),

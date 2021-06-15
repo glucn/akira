@@ -1,15 +1,16 @@
 import { CdkDragDrop } from '@angular/cdk/drag-drop';
-import { ChangeDetectionStrategy, Component, OnInit, Pipe, PipeTransform, ViewChild } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnDestroy, OnInit, Pipe, PipeTransform, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatTable } from '@angular/material/table';
-import { skipWhile, switchMap } from 'rxjs/operators';
+import { Subject } from 'rxjs';
+import { skipWhile, switchMap, takeUntil } from 'rxjs/operators';
 import { getAccountUrl } from '../shared/account-utils';
 import { Account, AccountService } from '../shared/account.service';
 import { ConfirmationDialogComponent } from '../shared/confirmation-dialog/confirmation-dialog.component';
 import { AccountDataSource } from './account-data-source';
 import {
   AccountDialogResult,
-  CreateUpdateAccountDialogComponent,
+  CreateUpdateAccountDialogComponent
 } from './create-update-account-dialog/create-update-account-dialog.component';
 
 @Component({
@@ -18,10 +19,12 @@ import {
   styleUrls: ['./accounts.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class AccountsComponent implements OnInit {
+export class AccountsComponent implements OnInit, OnDestroy {
   @ViewChild('table') table!: MatTable<Account>;
 
   displayedColumns: string[] = ['reorder', 'name', 'balance', 'currency', 'type', 'action'];
+
+  private ngUnsubscribe = new Subject();
 
   constructor(
     private accountService: AccountService,
@@ -31,6 +34,11 @@ export class AccountsComponent implements OnInit {
 
   ngOnInit(): void {
     this.accountService.listAccounts().subscribe((res) => console.log(res));
+  }
+
+  ngOnDestroy() {
+    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.complete();
   }
 
   createAccount(): void {
@@ -45,9 +53,11 @@ export class AccountsComponent implements OnInit {
       .afterClosed()
       .pipe(
         skipWhile((result: AccountDialogResult) => !result || !result.account),
-        switchMap((result: AccountDialogResult) => this.accountService.createAccount(result.account))
+        switchMap((result: AccountDialogResult) => this.accountService.createAccount(result.account)),
+        takeUntil(this.ngUnsubscribe)
       )
       .subscribe(
+        // TODO: remove debug subscription
         (next) => console.log('account created', next),
         (err) => console.log(err)
       );
@@ -65,9 +75,11 @@ export class AccountsComponent implements OnInit {
       .afterClosed()
       .pipe(
         skipWhile((result: AccountDialogResult) => !result || !result.account),
-        switchMap((result: AccountDialogResult) => this.accountService.updateAccount(result.account))
+        switchMap((result: AccountDialogResult) => this.accountService.updateAccount(result.account)),
+        takeUntil(this.ngUnsubscribe)
       )
       .subscribe(
+        // TODO: remove debug subscription
         (next) => console.log('account updated', next),
         (err) => console.log(err)
       );
@@ -85,19 +97,27 @@ export class AccountsComponent implements OnInit {
       .afterClosed()
       .pipe(
         skipWhile((result: AccountDialogResult) => !result),
-        switchMap(() => this.accountService.deleteAccount(account.accountId!))
+        switchMap(() => this.accountService.deleteAccount(account.accountId!)),
+        takeUntil(this.ngUnsubscribe)
       )
       .subscribe(
+        // TODO: remove debug subscription
+
         () => console.log('account deleted'),
         (err) => console.log(err)
       );
   }
 
   dropTable(event: CdkDragDrop<AccountDataSource>): void {
-    this.accountService.moveAccountOrdering(event.previousIndex, event.currentIndex).subscribe(
-      () => console.log('account moved'),
-      (err) => console.log(err)
-    );
+    this.accountService
+      .moveAccountOrdering(event.previousIndex, event.currentIndex)
+      .pipe(takeUntil(this.ngUnsubscribe))
+      .subscribe(
+        // TODO: remove debug subscription
+
+        () => console.log('account moved'),
+        (err) => console.log(err)
+      );
   }
 }
 
