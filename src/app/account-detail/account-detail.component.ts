@@ -1,17 +1,18 @@
-import { Component, Injectable, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatTableDataSource } from '@angular/material/table';
 import { ActivatedRoute } from '@angular/router';
-import { BehaviorSubject, combineLatest, Observable, Subject } from 'rxjs';
+import { combineLatest, Observable, Subject } from 'rxjs';
 import { map, skipWhile, switchMap, takeUntil } from 'rxjs/operators';
 import { DEFAULT_ICON, getAccountTypes$ } from '../shared/account-type';
 import { Account, AccountService } from '../shared/account.service';
-import { Transaction, TransactionService } from '../shared/transaction.service';
+import { TransactionService } from '../shared/transaction.service';
 import {
   CreateUpdateTransactionDialogComponent,
   TransactionDialogResult
 } from './create-update-transaction-dialog/create-update-transaction-dialog.component';
+import { TransactionsDataSource } from './transactions-data-sourse';
 
 @Component({
   selector: 'app-account-detail',
@@ -22,7 +23,7 @@ export class AccountDetailComponent implements OnInit, OnDestroy {
   // The MatPaginator inside of *ngIf cannot be picked up until DOM is rendered, this is the workaround
   // https://github.com/angular/components/issues/10205
   @ViewChild(MatPaginator) set paginator(paginator: MatPaginator) {
-    this.transactionDataSource.paginator = paginator;
+    // this.transactionDataSource.paginator = paginator;
   }
 
   private accountId$: Observable<string>;
@@ -32,7 +33,7 @@ export class AccountDetailComponent implements OnInit, OnDestroy {
 
   displayedColumns: string[] = ['transactionDate', 'postingDate', 'type', 'amount', 'description', 'balance', 'action'];
 
-  transactionDataSource = new MatTableDataSource<Transaction>(getData());
+  transactionDataSource$: Observable<TransactionsDataSource>;
 
   private ngUnsubscribe = new Subject();
 
@@ -57,6 +58,10 @@ export class AccountDetailComponent implements OnInit, OnDestroy {
 
     this.accountIcon$ = combineLatest([this.account$, getAccountTypes$()]).pipe(
       map(([account, types]) => types.find((type) => type.value === account.type)?.icon || DEFAULT_ICON)
+    );
+
+    this.transactionDataSource$ = this.accountId$.pipe(
+      map((accountId) => new TransactionsDataSource(this.transactionService, accountId))
     );
   }
 
@@ -100,46 +105,4 @@ export class AccountDetailComponent implements OnInit, OnDestroy {
         (err) => console.log(err)
       );
   }
-}
-
-function getData(): Transaction[] {
-  var transactions: Transaction[] = [];
-  for (var i = 0; i < 50; i++) {
-    transactions.push({
-      transactionDate: new Date(),
-      postingDate: new Date(),
-      type: 'TEST',
-      amount: 100,
-      description: 'TEST',
-      balance: 100,
-    });
-  }
-  return transactions;
-}
-
-@Injectable({
-  providedIn: 'root',
-})
-export class TransactionDataSource extends MatTableDataSource<Transaction> {
-  constructor() {
-    super();
-  }
-
-  connect(): BehaviorSubject<Transaction[]> {
-    var transactions: Transaction[] = [];
-    for (var i = 0; i < 50; i++) {
-      transactions.push({
-        transactionDate: new Date(),
-        postingDate: new Date(),
-        type: 'TEST',
-        amount: 100,
-        description: 'TEST',
-        balance: 100,
-      });
-    }
-
-    return new BehaviorSubject(transactions);
-  }
-
-  disconnect() {}
 }
