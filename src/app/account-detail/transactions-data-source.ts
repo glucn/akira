@@ -1,0 +1,93 @@
+import { DataSource } from '@angular/cdk/collections';
+import { EventEmitter } from '@angular/core';
+import firebase from 'firebase/app';
+import { BehaviorSubject, Observable, Subject } from 'rxjs';
+import { map, switchMap, takeUntil, tap } from 'rxjs/operators';
+import { Transaction, TransactionService } from '../shared/transaction.service';
+
+export class TransactionsDataSource extends DataSource<Transaction> {
+  private PAGE_SIZE = 5;
+
+  private currentPageIndex: number = 0;
+  private pageStartAtMarkers: firebase.firestore.DocumentSnapshot<Transaction>[] = [];
+  private hasNextPage$$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  private hasPreviousPage$$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+
+  private currentPage$$: BehaviorSubject<firebase.firestore.DocumentSnapshot<Transaction> | undefined> =
+    new BehaviorSubject<firebase.firestore.DocumentSnapshot<Transaction> | undefined>(undefined);
+
+  private ngUnsubscribe = new Subject();
+
+  constructor(
+    private transactionService: TransactionService,
+    private accountId: string,
+    private previousPageEvent: EventEmitter<{}>,
+    private nextPageEvent: EventEmitter<{}>
+  ) {
+    super();
+
+    this.previousPageEvent.pipe(takeUntil(this.ngUnsubscribe)).subscribe(() => this.listPreviousPage());
+
+    this.nextPageEvent.pipe(takeUntil(this.ngUnsubscribe)).subscribe(() => this.listNextPage());
+  }
+
+  connect(): Observable<Transaction[]> {
+    return this.currentPage$$.pipe(
+      switchMap((currentPage) =>
+        this.transactionService.listTransactionsByAccount(this.accountId, this.PAGE_SIZE, currentPage)
+      ),
+      tap((listTransactionResponse) => {
+        this.hasNextPage$$.next(listTransactionResponse.hasMore);
+        if (listTransactionResponse.hasMore) {
+          this.pageStartAtMarkers.push(listTransactionResponse.nextStartAt!);
+        }
+      }),
+      map((listTransactionResponse) =>
+        listTransactionResponse.transactions.map((transaction: any) => ({
+          transactionDate: transaction.transactionDate.toDate(),
+          postingDate: transaction.postingDate.toDate(),
+          type: transaction.type,
+          amount: transaction.amount,
+          description: transaction.description,
+        }))
+      )
+    );
+  }
+
+  disconnect() {
+    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.complete();
+  }
+
+  hasPreviousPage$(): Observable<boolean> {
+    return this.hasPreviousPage$$.asObservable();
+  }
+
+  hasNextPage$(): Observable<boolean> {
+    return this.hasNextPage$$.asObservable();
+  }
+
+  listPreviousPage() {
+    this.pageStartAtMarkers.pop();
+
+    if (this.currentPageIndex === 1) {
+      this.currentPageIndex--;
+      this.pageStartAtMarkers = [];
+      this.currentPage$$.next(undefined);
+      this.hasPreviousPage$$.next(false);
+    } else if (this.currentPageIndex > 1) {
+      this.currentPageIndex--;
+      this.pageStartAtMarkers = this.pageStartAtMarkers.slice(0, this.currentPageIndex);
+      this.currentPage$$.next(this.pageStartAtMarkers[this.currentPageIndex - 1]);
+      this.hasPreviousPage$$.next(true);
+    }
+  }
+
+  listNextPage() {
+    if (this.pageStartAtMarkers.length > 0) {
+      this.currentPageIndex++;
+      this.currentPage$$.next(this.pageStartAtMarkers[this.pageStartAtMarkers.length - 1]);
+      this.hasPreviousPage$$.next(true);
+    }
+  }
+}

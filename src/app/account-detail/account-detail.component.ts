@@ -1,10 +1,8 @@
-import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Component, EventEmitter, OnDestroy, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { MatPaginator } from '@angular/material/paginator';
-import { MatTableDataSource } from '@angular/material/table';
 import { ActivatedRoute } from '@angular/router';
 import { combineLatest, Observable, Subject } from 'rxjs';
-import { map, skipWhile, switchMap, takeUntil } from 'rxjs/operators';
+import { map, shareReplay, skipWhile, switchMap, takeUntil } from 'rxjs/operators';
 import { DEFAULT_ICON, getAccountTypes$ } from '../shared/account-type';
 import { Account, AccountService } from '../shared/account.service';
 import { TransactionService } from '../shared/transaction.service';
@@ -12,7 +10,7 @@ import {
   CreateUpdateTransactionDialogComponent,
   TransactionDialogResult
 } from './create-update-transaction-dialog/create-update-transaction-dialog.component';
-import { TransactionsDataSource } from './transactions-data-sourse';
+import { TransactionsDataSource } from './transactions-data-source';
 
 @Component({
   selector: 'app-account-detail',
@@ -20,12 +18,6 @@ import { TransactionsDataSource } from './transactions-data-sourse';
   styleUrls: ['./account-detail.component.scss'],
 })
 export class AccountDetailComponent implements OnInit, OnDestroy {
-  // The MatPaginator inside of *ngIf cannot be picked up until DOM is rendered, this is the workaround
-  // https://github.com/angular/components/issues/10205
-  @ViewChild(MatPaginator) set paginator(paginator: MatPaginator) {
-    // this.transactionDataSource.paginator = paginator;
-  }
-
   private accountId$: Observable<string>;
 
   public account$: Observable<Account>;
@@ -34,6 +26,11 @@ export class AccountDetailComponent implements OnInit, OnDestroy {
   displayedColumns: string[] = ['transactionDate', 'postingDate', 'type', 'amount', 'description', 'balance', 'action'];
 
   transactionDataSource$: Observable<TransactionsDataSource>;
+  transactionDataSource: TransactionsDataSource | undefined;
+  hasNextPage$: Observable<boolean>;
+  hasPreviousPage$: Observable<boolean>;
+  nextPage: EventEmitter<{}> = new EventEmitter();
+  previousPage: EventEmitter<{}> = new EventEmitter();
 
   private ngUnsubscribe = new Subject();
 
@@ -61,8 +58,15 @@ export class AccountDetailComponent implements OnInit, OnDestroy {
     );
 
     this.transactionDataSource$ = this.accountId$.pipe(
-      map((accountId) => new TransactionsDataSource(this.transactionService, accountId))
+      map(
+        (accountId) => new TransactionsDataSource(this.transactionService, accountId, this.previousPage, this.nextPage)
+      ),
+      shareReplay(1)
     );
+
+    this.hasNextPage$ = this.transactionDataSource$.pipe(switchMap((dataSource) => dataSource.hasNextPage$()));
+
+    this.hasPreviousPage$ = this.transactionDataSource$.pipe(switchMap((dataSource) => dataSource.hasPreviousPage$()));
   }
 
   ngOnInit(): void {}
@@ -104,5 +108,13 @@ export class AccountDetailComponent implements OnInit, OnDestroy {
         (next) => console.log('transaction created', next),
         (err) => console.log(err)
       );
+  }
+
+  displayPreviousPage(): void {
+    this.previousPage.emit({});
+  }
+
+  displayNextPage(): void {
+    this.nextPage.emit({});
   }
 }

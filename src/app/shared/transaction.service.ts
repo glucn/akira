@@ -1,8 +1,12 @@
 import { Injectable } from '@angular/core';
 import { AngularFireAuth } from '@angular/fire/auth';
-import { AngularFirestore, AngularFirestoreCollection } from '@angular/fire/firestore';
-import { combineLatest, Observable } from 'rxjs';
-import { map, shareReplay, skipWhile, switchMap } from 'rxjs/operators';
+import {
+  AngularFirestore,
+  AngularFirestoreCollection
+} from '@angular/fire/firestore';
+import firebase from 'firebase/app';
+import { combineLatest, Observable, of, zip } from 'rxjs';
+import { map, shareReplay, skipWhile, switchMap, tap } from 'rxjs/operators';
 import { v4 as uuidv4 } from 'uuid';
 
 export interface Transaction {
@@ -27,7 +31,7 @@ export interface Transaction {
 export interface ListTransactionsResponse {
   transactions: Transaction[];
   hasMore: boolean;
-  nextStartAt: Transaction | null;
+  nextStartAt: firebase.firestore.DocumentSnapshot<Transaction> | null;
 }
 
 @Injectable({
@@ -74,6 +78,14 @@ export class TransactionService {
     );
   }
 
+  private getTransactionSnapshot(transactionId: string): Observable<firebase.firestore.DocumentSnapshot<Transaction>> {
+    return this.transactionCollectionRef$.pipe(
+      switchMap((collection: AngularFirestoreCollection<Transaction>) =>
+        collection.doc<Transaction>(transactionId).get()
+      )
+    );
+  }
+
   public getTransaction(transactionId: string): Observable<Transaction | undefined> {
     return this.transactionCollectionRef$.pipe(
       switchMap((collection: AngularFirestoreCollection<Transaction>) =>
@@ -87,33 +99,35 @@ export class TransactionService {
   public listTransactionsByAccount(
     accountId: string,
     pageSize: number,
-    nextStartAt: Transaction | null
+    nextStartAt: firebase.firestore.DocumentSnapshot<Transaction> | undefined
   ): Observable<ListTransactionsResponse> {
-    return this.transactionCollectionRef$.pipe(
+    const transactions$ = this.transactionCollectionRef$.pipe(
       map(
         (ref): AngularFirestoreCollection<Transaction> =>
           this.afs.collection(ref.ref, (r) => {
             const q = r
               .where('accountId', '==', accountId)
               .orderBy('postingDate', 'desc')
-              .limit(pageSize + 1); // query one more record to determine if there's more pages
+              .limit(pageSize + 1); // query one more record to determine if there's another page
             return nextStartAt ? q.startAt(nextStartAt) : q;
           })
       ),
       switchMap((ref) => ref.valueChanges({ idField: 'transactionId' })),
-      map((transactions: any[]) => ({
-        transactions: transactions
-          .map((transaction) => ({
-            transactionDate: transaction.transactionDate.toDate(),
-            postingDate: transaction.postingDate.toDate(),
-            type: transaction.type,
-            amount: transaction.amount,
-            description: transaction.description,
-          }))
-          .slice(0, pageSize),
+      shareReplay(1)
+    );
+
+    const nextStartAt$: Observable<firebase.firestore.DocumentSnapshot<Transaction> | null> = transactions$.pipe(
+      switchMap((transactions) =>
+        transactions.length > pageSize ? this.getTransactionSnapshot(transactions[pageSize].transactionId) : of(null)
+      )
+    );
+
+    return zip(transactions$, nextStartAt$).pipe(
+      map(([transactions, next]) => ({
+        transactions: transactions.slice(0, pageSize),
         hasMore: transactions.length > pageSize,
-        nextStartAt: transactions.length > pageSize ? transactions[pageSize] : null,
-      }))
+        nextStartAt: next,
+      })),
     );
   }
 }

@@ -15,9 +15,21 @@
             <button mat-raised-button color="primary" (click)="createTransaction()">Add Transaction</button>
             <button mat-raised-button>Import</button>
             <button mat-raised-button>Export</button>
-            <mat-paginator [pageSizeOptions]="[5, 10, 20]" [showFirstLastButtons]="false" class="transactions-table-paginator"></mat-paginator>
+            <div class="transactions-table-paginator">
+              <button
+                mat-icon-button
+                color="primary"
+                (click)="displayPreviousPage()"
+                [disabled]="!(hasPreviousPage$ | async)"
+              >
+                <mat-icon>navigate_before</mat-icon>
+              </button>
+              <button mat-icon-button color="primary" (click)="displayNextPage()" [disabled]="!(hasNextPage$ | async)">
+                <mat-icon>navigate_next</mat-icon>
+              </button>
+            </div>
           </div>
-          <table class="transactions-table" mat-table [dataSource]="transactionDataSource">
+          <table class="transactions-table" mat-table [dataSource]="transactionDataSource!">
             <!-- Transaction Date Column -->
             <ng-container matColumnDef="transactionDate">
               <th mat-header-cell *matHeaderCellDef>Transaction Date</th>

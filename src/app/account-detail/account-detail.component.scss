@@ -27,4 +27,6 @@
 
 .transactions-table-paginator {
   flex: 1;
+  display: flex;
+  justify-content: flex-end;
 }
