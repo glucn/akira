@@ -5,10 +5,11 @@ import { combineLatest, Observable, Subject } from 'rxjs';
 import { map, shareReplay, skipWhile, switchMap, takeUntil } from 'rxjs/operators';
 import { DEFAULT_ICON, getAccountTypes$ } from '../shared/account-type';
 import { Account, AccountService } from '../shared/account.service';
-import { TransactionService } from '../shared/transaction.service';
+import { ConfirmationDialogComponent } from '../shared/confirmation-dialog/confirmation-dialog.component';
+import { Transaction, TransactionService } from '../shared/transaction.service';
 import {
   CreateUpdateTransactionDialogComponent,
-  TransactionDialogResult,
+  TransactionDialogResult
 } from './create-update-transaction-dialog/create-update-transaction-dialog.component';
 import { TransactionsDataSource } from './transactions-data-source';
 
@@ -128,5 +129,29 @@ export class AccountDetailComponent implements OnInit, OnDestroy {
 
   displayFirstPage(): void {
     this.firstPage.emit({});
+  }
+
+  // TODO: there could be a bug when deleting cause the total page number reduces
+  deleteTransaction(transaction: Transaction): void {
+    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+      width: '400px',
+      data: {
+        title: 'Confirm deleting transaction',
+        body: `Are you sure you want to delete transaction with amount ${transaction.amount} happened at ${transaction.transactionDate}?`,
+      },
+    });
+    dialogRef
+      .afterClosed()
+      .pipe(
+        skipWhile((result: TransactionDialogResult) => !result),
+        switchMap(() => this.transactionService.deleteTransaction(transaction.transactionId!)),
+        takeUntil(this.ngUnsubscribe)
+      )
+      .subscribe(
+        // TODO: remove debug subscription
+
+        () => console.log('transaction deleted'),
+        (err) => console.log(err)
+      );
   }
 }

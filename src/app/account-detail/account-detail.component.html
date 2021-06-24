@@ -89,7 +89,7 @@
                   <button mat-menu-item>Edit</button>
                   <button mat-menu-item>Move Up (Same Day)</button>
                   <button mat-menu-item>Move Down (Same Day)</button>
-                  <button mat-menu-item>Delete</button>
+                  <button mat-menu-item (click)="deleteTransaction(transaction)">Delete</button>
                 </mat-menu>
               </td>
             </ng-container>

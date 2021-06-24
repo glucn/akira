@@ -41,7 +41,6 @@ export class TransactionService {
   transactionCollectionRef$: Observable<AngularFirestoreCollection<Transaction>>;
 
   constructor(private readonly afs: AngularFirestore, private readonly auth: AngularFireAuth) {
-    // firebase.setLogLevel('debug');
     this.transactionCollectionRef$ = this.auth.user.pipe(
       skipWhile((user) => !user || user == null),
       map((user): AngularFirestoreCollection<Transaction> => {
@@ -128,6 +127,12 @@ export class TransactionService {
         hasMore: transactions.length > pageSize,
         nextStartAt: next,
       })),
+    );
+  }
+
+  public deleteTransaction(transactionId: string): Observable<void> {
+    return this.transactionCollectionRef$.pipe(
+      switchMap(collection => collection.doc<Transaction>(transactionId).delete())
     );
   }
 }
