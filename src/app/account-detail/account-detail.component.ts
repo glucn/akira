@@ -8,7 +8,7 @@ import { Account, AccountService } from '../shared/account.service';
 import { TransactionService } from '../shared/transaction.service';
 import {
   CreateUpdateTransactionDialogComponent,
-  TransactionDialogResult
+  TransactionDialogResult,
 } from './create-update-transaction-dialog/create-update-transaction-dialog.component';
 import { TransactionsDataSource } from './transactions-data-source';
 
@@ -31,6 +31,7 @@ export class AccountDetailComponent implements OnInit, OnDestroy {
   hasPreviousPage$: Observable<boolean>;
   nextPage: EventEmitter<{}> = new EventEmitter();
   previousPage: EventEmitter<{}> = new EventEmitter();
+  firstPage: EventEmitter<{}> = new EventEmitter();
 
   private ngUnsubscribe = new Subject();
 
@@ -59,7 +60,14 @@ export class AccountDetailComponent implements OnInit, OnDestroy {
 
     this.transactionDataSource$ = this.accountId$.pipe(
       map(
-        (accountId) => new TransactionsDataSource(this.transactionService, accountId, this.previousPage, this.nextPage)
+        (accountId) =>
+          new TransactionsDataSource(
+            this.transactionService,
+            accountId,
+            this.firstPage,
+            this.previousPage,
+            this.nextPage
+          )
       ),
       shareReplay(1)
     );
@@ -116,5 +124,9 @@ export class AccountDetailComponent implements OnInit, OnDestroy {
 
   displayNextPage(): void {
     this.nextPage.emit({});
+  }
+
+  displayFirstPage(): void {
+    this.firstPage.emit({});
   }
 }

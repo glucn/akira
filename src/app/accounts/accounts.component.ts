@@ -33,7 +33,6 @@ export class AccountsComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    this.accountService.listAccounts().subscribe((res) => console.log(res));
   }
 
   ngOnDestroy() {

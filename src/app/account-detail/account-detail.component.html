@@ -19,6 +19,14 @@
               <button
                 mat-icon-button
                 color="primary"
+                (click)="displayFirstPage()"
+                [disabled]="!(hasPreviousPage$ | async)"
+              >
+                <mat-icon>first_page</mat-icon>
+              </button>
+              <button
+                mat-icon-button
+                color="primary"
                 (click)="displayPreviousPage()"
                 [disabled]="!(hasPreviousPage$ | async)"
               >

@@ -21,13 +21,14 @@ export class TransactionsDataSource extends DataSource<Transaction> {
   constructor(
     private transactionService: TransactionService,
     private accountId: string,
+    private firstPageEvent: EventEmitter<{}>,
     private previousPageEvent: EventEmitter<{}>,
     private nextPageEvent: EventEmitter<{}>
   ) {
     super();
 
+    this.firstPageEvent.pipe(takeUntil(this.ngUnsubscribe)).subscribe(() => this.listFirstPage());
     this.previousPageEvent.pipe(takeUntil(this.ngUnsubscribe)).subscribe(() => this.listPreviousPage());
-
     this.nextPageEvent.pipe(takeUntil(this.ngUnsubscribe)).subscribe(() => this.listNextPage());
   }
 
@@ -65,6 +66,15 @@ export class TransactionsDataSource extends DataSource<Transaction> {
 
   hasNextPage$(): Observable<boolean> {
     return this.hasNextPage$$.asObservable();
+  }
+
+  listFirstPage() {
+    if (this.currentPageIndex > 0) {
+      this.currentPageIndex = 0;
+      this.pageStartAtMarkers = [];
+      this.currentPage$$.next(undefined);
+      this.hasPreviousPage$$.next(false);
+    }
   }
 
   listPreviousPage() {
