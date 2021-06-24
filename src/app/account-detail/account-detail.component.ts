@@ -137,7 +137,10 @@ export class AccountDetailComponent implements OnInit, OnDestroy {
       width: '400px',
       data: {
         title: 'Confirm deleting transaction',
-        body: `Are you sure you want to delete transaction with amount ${transaction.amount} happened at ${transaction.transactionDate}?`,
+        body: `Are you sure you want to delete the transaction with amount
+               ${this.formatTransactionCurrency(transaction)} happened at
+               ${this.formatTransactionDate(transaction)}?
+               `,
       },
     });
     dialogRef
@@ -149,9 +152,17 @@ export class AccountDetailComponent implements OnInit, OnDestroy {
       )
       .subscribe(
         // TODO: remove debug subscription
-
         () => console.log('transaction deleted'),
         (err) => console.log(err)
       );
+  }
+
+  private formatTransactionCurrency(transaction: Transaction): string {
+    const option = { style: 'currency', currency: transaction.currency, currencyDisplay: 'narrowSymbol' };
+    return new Intl.NumberFormat(undefined, option).format(transaction.amount);
+  }
+
+  private formatTransactionDate(transaction: Transaction): string {
+    return new Intl.DateTimeFormat().format(transaction.transactionDate);
   }
 }

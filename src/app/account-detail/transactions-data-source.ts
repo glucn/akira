@@ -51,6 +51,7 @@ export class TransactionsDataSource extends DataSource<Transaction> {
           type: transaction.type,
           amount: transaction.amount,
           description: transaction.description,
+          currency: transaction.currency,
         }))
       )
     );
