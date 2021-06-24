@@ -1,9 +1,6 @@
 import { Injectable } from '@angular/core';
 import { AngularFireAuth } from '@angular/fire/auth';
-import {
-  AngularFirestore,
-  AngularFirestoreCollection
-} from '@angular/fire/firestore';
+import { AngularFirestore, AngularFirestoreCollection } from '@angular/fire/firestore';
 import firebase from 'firebase/app';
 import { combineLatest, Observable, of, zip } from 'rxjs';
 import { map, shareReplay, skipWhile, switchMap, tap } from 'rxjs/operators';
@@ -126,13 +123,33 @@ export class TransactionService {
         transactions: transactions.slice(0, pageSize),
         hasMore: transactions.length > pageSize,
         nextStartAt: next,
-      })),
+      }))
+    );
+  }
+
+  public updateTransaction(transaction: Transaction): Observable<Transaction | undefined> {
+    var now = new Date();
+    return this.transactionCollectionRef$.pipe(
+      switchMap((ref) =>
+        ref.doc(transaction.transactionId).update({
+          // TODO: add other fields in here
+          accountId: transaction.accountId,
+          transactionDate: transaction.transactionDate,
+          postingDate: transaction.postingDate || transaction.transactionDate,
+          type: transaction.type || '',
+          amount: transaction.amount || 0,
+          description: transaction.description || '',
+          currency: transaction.currency || '',
+          updated: now,
+        })
+      ),
+      switchMap(() => this.getTransaction(transaction.transactionId!))
     );
   }
 
   public deleteTransaction(transactionId: string): Observable<void> {
     return this.transactionCollectionRef$.pipe(
-      switchMap(collection => collection.doc<Transaction>(transactionId).delete())
+      switchMap((collection) => collection.doc<Transaction>(transactionId).delete())
     );
   }
 }

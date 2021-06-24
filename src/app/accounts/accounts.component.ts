@@ -66,7 +66,7 @@ export class AccountsComponent implements OnInit, OnDestroy {
     const dialogRef = this.dialog.open(CreateUpdateAccountDialogComponent, {
       width: '400px',
       data: {
-        account: account,
+        account: {...account},
         isCreate: false,
       },
     });

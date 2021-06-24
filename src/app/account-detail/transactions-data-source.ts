@@ -46,6 +46,7 @@ export class TransactionsDataSource extends DataSource<Transaction> {
       map((listTransactionResponse) =>
         listTransactionResponse.transactions.map((transaction: any) => ({
           transactionId: transaction.transactionId,
+          accountId: transaction.accountId,
           transactionDate: transaction.transactionDate.toDate(),
           postingDate: transaction.postingDate.toDate(),
           type: transaction.type,

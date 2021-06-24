@@ -131,6 +131,29 @@ export class AccountDetailComponent implements OnInit, OnDestroy {
     this.firstPage.emit({});
   }
 
+  updateTransaction(transaction: Transaction): void {
+    console.log(transaction);
+    const dialogRef = this.dialog.open(CreateUpdateTransactionDialogComponent, {
+      width: '400px',
+      data: {
+        transaction: { ...transaction },
+        isCreate: false,
+      },
+    });
+    dialogRef
+      .afterClosed()
+      .pipe(
+        skipWhile((result: TransactionDialogResult) => !result || !result.transaction),
+        switchMap((result: TransactionDialogResult) => this.transactionService.updateTransaction(result.transaction)),
+        takeUntil(this.ngUnsubscribe)
+      )
+      .subscribe(
+        // TODO: remove debug subscription
+        (next) => console.log('transaction updated', next),
+        (err) => console.log(err)
+      );
+  }
+
   // TODO: there could be a bug when deleting cause the total page number reduces
   deleteTransaction(transaction: Transaction): void {
     const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
