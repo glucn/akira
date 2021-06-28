@@ -1,0 +1,36 @@
+<mat-vertical-stepper [linear]="true" #stepper>
+  <mat-step [stepControl]="firstFormGroup">
+    <form [formGroup]="firstFormGroup">
+      <ng-template matStepLabel>Select a file</ng-template>
+      <file-uploader formControlName="transactionFile"></file-uploader>
+      <div>
+        <button
+          mat-raised-button
+          matStepperNext
+          color="primary"
+          (click)="uploadFile()"
+          [disabled]="firstFormGroup.invalid"
+        >
+          Next
+        </button>
+      </div>
+    </form>
+  </mat-step>
+  <mat-step [stepControl]="secondFormGroup">
+    <form [formGroup]="secondFormGroup">
+      <ng-template matStepLabel>Map data fields</ng-template>
+      <div>
+        <button mat-raised-button matStepperPrevious>Back</button>
+        <button mat-raised-button matStepperNext color="primary">Next</button>
+      </div>
+    </form>
+  </mat-step>
+  <mat-step>
+    <ng-template matStepLabel>Import</ng-template>
+    <p>Are your sure you want to import $X transaction to account $Y?</p>
+    <div>
+      <button mat-raised-button matStepperPrevious>Back</button>
+      <button mat-raised-button color="primary" (click)="importTransactions()">Import</button>
+    </div>
+  </mat-step>
+</mat-vertical-stepper>

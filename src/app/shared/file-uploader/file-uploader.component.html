@@ -1,0 +1,8 @@
+<div>
+  <input type="file" [hidden]="true" #fileUpload accept=".csv" />
+  <button mat-icon-button color="primary" (click)="fileUpload.click()"><mat-icon>upload_file</mat-icon></button>
+  <mat-form-field class="file-name">
+    <mat-label>Transaction File (.csv)</mat-label>
+    <input matInput [(ngModel)]="fileName" (click)="fileUpload.click()" [readonly]="true" />
+  </mat-form-field>
+</div>

@@ -2,15 +2,16 @@ import { Component, EventEmitter, OnDestroy, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute } from '@angular/router';
 import { combineLatest, Observable, Subject } from 'rxjs';
-import { map, shareReplay, skipWhile, switchMap, takeUntil } from 'rxjs/operators';
+import { map, shareReplay, skipWhile, switchMap, take, takeUntil } from 'rxjs/operators';
 import { DEFAULT_ICON, getAccountTypes$ } from '../shared/account-type';
 import { Account, AccountService } from '../shared/account.service';
 import { ConfirmationDialogComponent } from '../shared/confirmation-dialog/confirmation-dialog.component';
 import { Transaction, TransactionService } from '../shared/transaction.service';
 import {
   CreateUpdateTransactionDialogComponent,
-  TransactionDialogResult
+  TransactionDialogResult,
 } from './create-update-transaction-dialog/create-update-transaction-dialog.component';
+import { ImportTransactionsDialogComponent } from './import-transactions-dialog/import-transactions-dialog.component';
 import { TransactionsDataSource } from './transactions-data-source';
 
 @Component({
@@ -187,5 +188,24 @@ export class AccountDetailComponent implements OnInit, OnDestroy {
 
   private formatTransactionDate(transaction: Transaction): string {
     return new Intl.DateTimeFormat().format(transaction.transactionDate);
+  }
+
+  importTransactions(): void {
+    const dialogRef = this.dialog.open(ImportTransactionsDialogComponent, {
+      width: '600px',
+      data: {},
+    });
+    dialogRef
+      .afterClosed()
+      .pipe(
+        skipWhile((result) => !result),
+        // switchMap((result) => this.transactionService.doSomething()),
+        take(1)
+      )
+      .subscribe(
+        // TODO: remove debug subscription
+        () => console.log('transactions imported'),
+        (err) => console.log(err)
+      );
   }
 }

@@ -1,9 +1,11 @@
 import { DragDropModule } from '@angular/cdk/drag-drop';
 import { CommonModule } from '@angular/common';
+import { HttpClientModule } from '@angular/common/http';
 import { NgModule } from '@angular/core';
 import { AngularFireModule } from '@angular/fire';
 import { AngularFireAuthModule, PERSISTENCE as AUTH_PERSISTENCE, SETTINGS as AUTH_SETTINGS } from '@angular/fire/auth';
 import { AngularFirestoreModule } from '@angular/fire/firestore';
+import { AngularFireStorageModule } from '@angular/fire/storage';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatNativeDateModule } from '@angular/material/core';
@@ -17,6 +19,7 @@ import { MatMenuModule } from '@angular/material/menu';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSidenavModule } from '@angular/material/sidenav';
+import { MatStepperModule } from '@angular/material/stepper';
 import { MatTableModule } from '@angular/material/table';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatToolbarModule } from '@angular/material/toolbar';
@@ -25,6 +28,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { environment } from 'src/environments/environment';
 import { AccountDetailComponent } from './account-detail/account-detail.component';
 import { CreateUpdateTransactionDialogComponent } from './account-detail/create-update-transaction-dialog/create-update-transaction-dialog.component';
+import { ImportTransactionsDialogComponent } from './account-detail/import-transactions-dialog/import-transactions-dialog.component';
 import { AccountLinkPipe, AccountsComponent } from './accounts/accounts.component';
 import { CreateUpdateAccountDialogComponent } from './accounts/create-update-account-dialog/create-update-account-dialog.component';
 import { AppRoutingModule } from './app-routing.module';
@@ -35,6 +39,7 @@ import { ConfirmationDialogComponent } from './shared/confirmation-dialog/confir
 import { SidenavItemComponent } from './sidenav/sidenav-item/sidenav-item.component';
 import { SidenavComponent } from './sidenav/sidenav.component';
 import { SidenavService } from './sidenav/sidenav.service';
+import { FileUploaderComponent } from './shared/file-uploader/file-uploader.component';
 
 @NgModule({
   declarations: [
@@ -49,10 +54,13 @@ import { SidenavService } from './sidenav/sidenav.service';
     AccountDetailComponent,
     AccountLinkPipe,
     CreateUpdateTransactionDialogComponent,
+    ImportTransactionsDialogComponent,
+    FileUploaderComponent,
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
+    HttpClientModule,
     DragDropModule,
     CommonModule,
     MatButtonModule,
@@ -67,6 +75,7 @@ import { SidenavService } from './sidenav/sidenav.service';
     MatPaginatorModule,
     MatSelectModule,
     MatSidenavModule,
+    MatStepperModule,
     MatTableModule,
     MatTabsModule,
     MatToolbarModule,
@@ -74,6 +83,7 @@ import { SidenavService } from './sidenav/sidenav.service';
     AngularFireModule.initializeApp(environment.firebase),
     AngularFireAuthModule,
     AngularFirestoreModule,
+    AngularFireStorageModule,
     FormsModule,
     BrowserAnimationsModule,
   ],

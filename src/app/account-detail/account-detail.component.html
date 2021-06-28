@@ -13,7 +13,7 @@
         <div *ngIf="transactionDataSource$ | async as transactionDataSource">
           <div class="transactio-actions">
             <button mat-raised-button color="primary" (click)="createTransaction()">Add Transaction</button>
-            <button mat-raised-button>Import</button>
+            <button mat-raised-button (click)="importTransactions()">Import</button>
             <button mat-raised-button>Export</button>
             <div class="transactions-table-paginator">
               <button
