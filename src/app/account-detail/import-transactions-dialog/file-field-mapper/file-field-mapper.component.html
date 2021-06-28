@@ -1,0 +1,20 @@
+<div>{{ file?.name }}</div>
+<mat-divider></mat-divider>
+<div *ngIf="!(loading$ | async)">
+  <div matLine class="field-line">
+    <div class="field-name">Transaction Date</div>
+    <mat-select>
+      <mat-option *ngFor="let field of fileFields$ | async" [value]="field">
+        {{ field }}
+      </mat-option>
+    </mat-select>
+  </div>
+  <div matLine class="field-line">
+    <div class="field-name">Posted Date</div>
+    <mat-select>
+      <mat-option *ngFor="let field of fileFields$ | async" [value]="field">
+        {{ field }}
+      </mat-option>
+    </mat-select>
+  </div>
+</div>
