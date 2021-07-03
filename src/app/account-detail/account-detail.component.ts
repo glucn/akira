@@ -25,7 +25,16 @@ export class AccountDetailComponent implements OnInit, OnDestroy {
   public account$: Observable<Account>;
   public accountIcon$: Observable<string>;
 
-  displayedColumns: string[] = ['transactionDate', 'postingDate', 'type', 'amount', 'description', 'balance', 'action'];
+  displayedColumns: string[] = [
+    'transactionDate',
+    'postingDate',
+    'type',
+    'debit',
+    'credit',
+    'description',
+    'balance',
+    'action',
+  ];
 
   transactionDataSource$: Observable<TransactionsDataSource>;
   transactionDataSource: TransactionsDataSource | undefined;
@@ -183,7 +192,10 @@ export class AccountDetailComponent implements OnInit, OnDestroy {
 
   private formatTransactionCurrency(transaction: Transaction): string {
     const option = { style: 'currency', currency: transaction.currency, currencyDisplay: 'narrowSymbol' };
-    return new Intl.NumberFormat(undefined, option).format(transaction.amount);
+
+    return transaction.debit
+      ? new Intl.NumberFormat(undefined, option).format(transaction.debit || 0)
+      : new Intl.NumberFormat(undefined, option).format(transaction.credit || 0);
   }
 
   private formatTransactionDate(transaction: Transaction): string {
@@ -191,15 +203,20 @@ export class AccountDetailComponent implements OnInit, OnDestroy {
   }
 
   importTransactions(): void {
-    const dialogRef = this.dialog.open(ImportTransactionsDialogComponent, {
-      width: '600px',
-      data: {},
-    });
-    dialogRef
-      .afterClosed()
+    this.account$
       .pipe(
+        switchMap((account) =>
+          this.dialog
+            .open(ImportTransactionsDialogComponent, {
+              width: '80vw',
+              data: {
+                account: account,
+              },
+            })
+            .afterClosed()
+        ),
         skipWhile((result) => !result),
-        // switchMap((result) => this.transactionService.doSomething()),
+        switchMap((result) => this.transactionService.createTransactions(result.transactions)),
         take(1)
       )
       .subscribe(

@@ -1,11 +1,23 @@
+import { CollectionViewer, DataSource } from '@angular/cdk/collections';
 import { STEPPER_GLOBAL_OPTIONS } from '@angular/cdk/stepper';
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, Inject, OnDestroy, OnInit } from '@angular/core';
 import { AngularFireStorage } from '@angular/fire/storage';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { BehaviorSubject, Observable, Subject } from 'rxjs';
+import { MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { BehaviorSubject, Observable, of, Subject } from 'rxjs';
 import { takeUntil, tap } from 'rxjs/operators';
+import { Account } from 'src/app/shared/account.service';
+import { Transaction } from 'src/app/shared/transaction.service';
 import { v4 as uuidv4 } from 'uuid';
 import { FieldOption } from './file-header-mapper/file-header-mapper.component';
+
+export interface ImportTransactionsDialogData {
+  account: Account;
+}
+
+export interface ImportTransactionsDialogResult {
+  transactions: Transaction[];
+}
 
 @Component({
   selector: 'app-import-transactions-dialog',
@@ -23,11 +35,19 @@ export class ImportTransactionsDialogComponent implements OnInit, OnDestroy {
   fileHeaderMappingFormGroup: FormGroup;
 
   private transactionsFile$: Observable<File>;
+  private fileContent$$: BehaviorSubject<string[]> = new BehaviorSubject<string[]>([]);
   private fileHeader$$: BehaviorSubject<FieldOption[]> = new BehaviorSubject<FieldOption[]>([]);
+  importTransactions: Transaction[] = [];
+
+  displayedColumns: string[] = ['transactionDate', 'postingDate', 'type', 'debit', 'credit', 'description'];
+  importReviewDataSource: ImportTransactionsDataSource | undefined;
 
   private ngUnsubscribe = new Subject();
 
-  constructor(private fireStorage: AngularFireStorage) {
+  constructor(
+    private fireStorage: AngularFireStorage,
+    @Inject(MAT_DIALOG_DATA) public data: ImportTransactionsDialogData
+  ) {
     this.fileSelectionFormGroup = new FormGroup({
       transactionFile: new FormControl(null, [Validators.required]),
     });
@@ -36,7 +56,8 @@ export class ImportTransactionsDialogComponent implements OnInit, OnDestroy {
       transactionDate: new FormControl('', Validators.required),
       postedDate: new FormControl(-1, Validators.required),
       type: new FormControl(-1, Validators.required),
-      amount: new FormControl('', Validators.required),
+      debit: new FormControl(-1, Validators.required),
+      credit: new FormControl(-1, Validators.required),
       description: new FormControl(-1, Validators.required),
     });
 
@@ -45,6 +66,7 @@ export class ImportTransactionsDialogComponent implements OnInit, OnDestroy {
         const fileReader = new FileReader();
         fileReader.onload = (e) => {
           if (typeof fileReader.result === 'string') {
+            this.fileContent$$.next(fileReader.result.split('\n'));
             this.fileHeader$$.next(this.parseFileHeader(fileReader.result));
           }
         };
@@ -64,8 +86,6 @@ export class ImportTransactionsDialogComponent implements OnInit, OnDestroy {
     this.ngUnsubscribe.next();
     this.ngUnsubscribe.complete();
   }
-
-  importTransactions(): void {}
 
   uploadFile(): void {
     const localFile = this.fileSelectionFormGroup.get('transactionFile')?.value;
@@ -91,5 +111,40 @@ export class ImportTransactionsDialogComponent implements OnInit, OnDestroy {
 
   test(): void {
     console.log(this.fileHeaderMappingFormGroup.value);
+    const fieldMapping = this.fileHeaderMappingFormGroup.value;
+    this.importTransactions = this.fileContent$$
+      .getValue()
+      .slice(1)
+      .filter((line) => !!line)
+      .map((line) => {
+        const fields = line.split(',').map((f) => f.trim());
+        const transactionDate = new Date(fields[fieldMapping.transactionDate] + ' (PST)');
+        return {
+          accountId: this.data.account.accountId,
+          transactionDate: transactionDate,
+          postingDate:
+            fieldMapping.postedDate === -1 ? transactionDate : new Date(fields[fieldMapping.postedDate] + ' (PST)'),
+          type: fieldMapping.type === -1 ? '' : fields[fieldMapping.type],
+          debit: parseFloat(fields[fieldMapping.debit]) || 0.0,
+          credit: parseFloat(fields[fieldMapping.credit]) || 0.0,
+          description: fieldMapping.description === -1 ? '' : fields[fieldMapping.description],
+          currency: this.data.account.currency,
+        };
+      });
+
+    console.log(this.importTransactions);
+    this.importReviewDataSource = new ImportTransactionsDataSource(this.importTransactions);
   }
+}
+
+export class ImportTransactionsDataSource extends DataSource<Transaction> {
+  constructor(readonly transactions: Transaction[]) {
+    super();
+  }
+
+  connect(): Observable<readonly Transaction[]> {
+    return of(this.transactions);
+  }
+
+  disconnect(): void {}
 }

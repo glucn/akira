@@ -17,7 +17,8 @@ export interface Transaction {
   transactionDate: Date;
   postingDate: Date;
   type: string;
-  amount: number;
+  debit: number;
+  credit: number;
   description: string;
   currency?: string;
   balance?: number;
@@ -55,7 +56,7 @@ export class TransactionService {
 
     return combineLatest([this.transactionCollectionRef$, this.auth.user]).pipe(
       switchMap(([ref, user]) => {
-        var now = new Date();
+        const now = new Date();
         return ref.doc(transactionId).set({
           // TODO: add other fields in here
           accountId: transaction.accountId,
@@ -63,7 +64,8 @@ export class TransactionService {
           transactionDate: transaction.transactionDate,
           postingDate: transaction.postingDate || transaction.transactionDate,
           type: transaction.type || '',
-          amount: transaction.amount || 0,
+          debit: transaction.debit || 0,
+          credit: transaction.credit || 0,
           description: transaction.description || '',
           currency: transaction.currency || '',
           created: now,
@@ -71,6 +73,35 @@ export class TransactionService {
         });
       }),
       switchMap(() => this.getTransaction(transactionId))
+    );
+  }
+
+  public createTransactions(transactions: Transaction[]): Observable<void> {
+    return combineLatest([this.transactionCollectionRef$, this.auth.user]).pipe(
+      switchMap(([ref, user]) => {
+        const now = new Date();
+        const writeBatch: firebase.firestore.WriteBatch = firebase.firestore().batch();
+
+        transactions.forEach((transaction) => {
+          const transactionId = transaction.transactionId || uuidv4();
+          // TODO: detect existing transaction with the same ID and avoid overwriting
+          writeBatch.set(ref.doc(transactionId).ref, {
+            // TODO: add other fields in here
+            accountId: transaction.accountId,
+            userId: user!.uid,
+            transactionDate: transaction.transactionDate,
+            postingDate: transaction.postingDate || transaction.transactionDate,
+            type: transaction.type || '',
+            debit: transaction.debit || 0,
+            credit: transaction.credit || 0,
+            description: transaction.description || '',
+            currency: transaction.currency || '',
+            created: now,
+            updated: now,
+          });
+        });
+        return writeBatch.commit();
+      })
     );
   }
 
@@ -137,7 +168,8 @@ export class TransactionService {
           transactionDate: transaction.transactionDate,
           postingDate: transaction.postingDate || transaction.transactionDate,
           type: transaction.type || '',
-          amount: transaction.amount || 0,
+          debit: transaction.debit || 0,
+          credit: transaction.credit || 0,
           description: transaction.description || '',
           currency: transaction.currency || '',
           updated: now,

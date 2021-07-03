@@ -37,9 +37,21 @@
       </td>
     </tr>
     <tr>
-      <td>Amount</td>
+      <td>Debit</td>
       <td class="file-field-selection">
-        <mat-select formControlName="amount">
+        <mat-select formControlName="debit">
+          <mat-option [value]="-1">(0)</mat-option>
+          <mat-option *ngFor="let field of fileHeader" [value]="field.value">
+            {{ field.name }}
+          </mat-option>
+        </mat-select>
+      </td>
+    </tr>
+    <tr>
+      <td>Credit</td>
+      <td class="file-field-selection">
+        <mat-select formControlName="credit">
+          <mat-option [value]="-1">(0)</mat-option>
           <mat-option *ngFor="let field of fileHeader" [value]="field.value">
             {{ field.name }}
           </mat-option>
@@ -49,7 +61,7 @@
     <tr>
       <td>Description</td>
       <td class="file-field-selection">
-        <mat-select formControlName="postedDate">
+        <mat-select formControlName="description">
           <mat-option [value]="-1">(Empty)</mat-option>
           <mat-option *ngFor="let field of fileHeader" [value]="field.value">
             {{ field.name }}

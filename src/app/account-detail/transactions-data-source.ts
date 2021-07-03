@@ -32,7 +32,7 @@ export class TransactionsDataSource extends DataSource<Transaction> {
     this.nextPageEvent.pipe(takeUntil(this.ngUnsubscribe)).subscribe(() => this.listNextPage());
   }
 
-  connect(): Observable<Transaction[]> {
+  connect(): Observable<readonly Transaction[]> {
     return this.currentPage$$.pipe(
       switchMap((currentPage) =>
         this.transactionService.listTransactionsByAccount(this.accountId, this.PAGE_SIZE, currentPage)
@@ -50,7 +50,8 @@ export class TransactionsDataSource extends DataSource<Transaction> {
           transactionDate: transaction.transactionDate.toDate(),
           postingDate: transaction.postingDate.toDate(),
           type: transaction.type,
-          amount: transaction.amount,
+          debit: transaction.debit,
+          credit: transaction.credit,
           description: transaction.description,
           currency: transaction.currency,
         }))
