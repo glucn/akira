@@ -4,22 +4,19 @@
       <ng-template matStepLabel>Select a file</ng-template>
       <file-uploader formControlName="transactionFile"></file-uploader>
       <div>
-        <!-- (click)="uploadFile()" -->
         <button mat-raised-button matStepperNext color="primary" [disabled]="firstFormGroup.invalid">Next</button>
       </div>
     </form>
   </mat-step>
   <mat-step [stepControl]="secondFormGroup">
-    <form [formGroup]="secondFormGroup">
-      <ng-template matStepLabel>Map data fields</ng-template>
-      <div *ngIf="this.firstFormGroup.get('transactionFile')?.value">
-        <file-field-mapper [file]="this.firstFormGroup.get('transactionFile')?.value"></file-field-mapper>
-      </div>
-      <div>
-        <button mat-raised-button matStepperPrevious>Back</button>
-        <button mat-raised-button matStepperNext color="primary">Next</button>
-      </div>
-    </form>
+    <ng-template matStepLabel>Map data fields</ng-template>
+    <div *ngIf="this.firstFormGroup.get('transactionFile')?.value">
+      <file-field-mapper [formGroup]="secondFormGroup" [fileFields]="fileHeader$ | async"></file-field-mapper>
+    </div>
+    <div>
+      <button mat-raised-button matStepperPrevious>Back</button>
+      <button mat-raised-button matStepperNext color="primary" (click)="test()">Next</button>
+    </div>
   </mat-step>
   <mat-step>
     <ng-template matStepLabel>Import</ng-template>

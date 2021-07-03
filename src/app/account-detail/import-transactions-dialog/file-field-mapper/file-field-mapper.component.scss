@@ -1,8 +1,22 @@
-.field-line {
-  display: flex;
-  gap: 16px;
+.transaction-fields-table {
+  width: 100%;
+  margin: 16px 0;
+  border-collapse: collapse;
+
+  tr {
+    height: 2rem;
+  }
+
+  tr:first-child {
+    border-bottom: solid 1px;
+  }
+
+  td:first-child,
+  th:first-child {
+    border-right: solid 1px;
+  }
 }
 
-.field-name {
-  white-space: pre;
+.file-field-selection {
+  width: 60%;
 }

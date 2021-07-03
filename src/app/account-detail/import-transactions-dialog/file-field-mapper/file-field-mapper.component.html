@@ -1,20 +1,61 @@
-<div>{{ file?.name }}</div>
-<mat-divider></mat-divider>
-<div *ngIf="!(loading$ | async)">
-  <div matLine class="field-line">
-    <div class="field-name">Transaction Date</div>
-    <mat-select>
-      <mat-option *ngFor="let field of fileFields$ | async" [value]="field">
-        {{ field }}
-      </mat-option>
-    </mat-select>
-  </div>
-  <div matLine class="field-line">
-    <div class="field-name">Posted Date</div>
-    <mat-select>
-      <mat-option *ngFor="let field of fileFields$ | async" [value]="field">
-        {{ field }}
-      </mat-option>
-    </mat-select>
-  </div>
-</div>
+<form [formGroup]="formGroup">
+  <table class="transaction-fields-table">
+    <tr>
+      <th>Transaction Fields</th>
+      <th>File Fields</th>
+    </tr>
+    <tr>
+      <td>Transaction Date</td>
+      <td class="file-field-selection">
+        <mat-select formControlName="transactionDate">
+          <mat-option *ngFor="let field of fileFields" [value]="field.value">
+            {{ field.name }}
+          </mat-option>
+        </mat-select>
+      </td>
+    </tr>
+    <tr>
+      <td>Posted Date</td>
+      <td class="file-field-selection">
+        <mat-select formControlName="postedDate">
+          <mat-option [value]="-1">(Same with transaction date)</mat-option>
+          <mat-option *ngFor="let field of fileFields" [value]="field.value">
+            {{ field.name }}
+          </mat-option>
+        </mat-select>
+      </td>
+    </tr>
+    <tr>
+      <td>Type</td>
+      <td class="file-field-selection">
+        <mat-select formControlName="type">
+          <mat-option [value]="-1">(Empty)</mat-option>
+          <mat-option *ngFor="let field of fileFields" [value]="field.value">
+            {{ field.name }}
+          </mat-option>
+        </mat-select>
+      </td>
+    </tr>
+    <tr>
+      <td>Amount</td>
+      <td class="file-field-selection">
+        <mat-select formControlName="amount">
+          <mat-option *ngFor="let field of fileFields" [value]="field.value">
+            {{ field.name }}
+          </mat-option>
+        </mat-select>
+      </td>
+    </tr>
+    <tr>
+      <td>Description</td>
+      <td class="file-field-selection">
+        <mat-select formControlName="postedDate">
+          <mat-option [value]="-1">(Empty)</mat-option>
+          <mat-option *ngFor="let field of fileFields" [value]="field.value">
+            {{ field.name }}
+          </mat-option>
+        </mat-select>
+      </td>
+    </tr>
+  </table>
+</form>
