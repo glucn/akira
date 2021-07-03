@@ -7,13 +7,13 @@ export interface FieldOption {
 }
 
 @Component({
-  selector: 'file-field-mapper',
-  templateUrl: './file-field-mapper.component.html',
-  styleUrls: ['./file-field-mapper.component.scss'],
+  selector: 'file-header-mapper',
+  templateUrl: './file-header-mapper.component.html',
+  styleUrls: ['./file-header-mapper.component.scss'],
 })
-export class FileFieldMapperComponent {
+export class FileHeaderMapperComponent {
   @Input() formGroup: FormGroup = new FormGroup({});
-  @Input() fileFields: FieldOption[] | null = [];
+  @Input() fileHeader: FieldOption[] | null = [];
 
   constructor() {}
 }

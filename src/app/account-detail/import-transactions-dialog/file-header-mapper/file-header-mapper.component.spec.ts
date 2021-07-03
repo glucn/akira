@@ -1,20 +1,20 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { FileFieldMapperComponent } from './file-field-mapper.component';
+import { FileHeaderMapperComponent } from './file-header-mapper.component';
 
-describe('FileFieldMapperComponent', () => {
-  let component: FileFieldMapperComponent;
-  let fixture: ComponentFixture<FileFieldMapperComponent>;
+describe('FileHeaderMapperComponent', () => {
+  let component: FileHeaderMapperComponent;
+  let fixture: ComponentFixture<FileHeaderMapperComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ FileFieldMapperComponent ]
+      declarations: [ FileHeaderMapperComponent ]
     })
     .compileComponents();
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(FileFieldMapperComponent);
+    fixture = TestBed.createComponent(FileHeaderMapperComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

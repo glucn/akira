@@ -5,7 +5,7 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { BehaviorSubject, Observable, Subject } from 'rxjs';
 import { takeUntil, tap } from 'rxjs/operators';
 import { v4 as uuidv4 } from 'uuid';
-import { FieldOption } from './file-field-mapper/file-field-mapper.component';
+import { FieldOption } from './file-header-mapper/file-header-mapper.component';
 
 @Component({
   selector: 'app-import-transactions-dialog',
@@ -19,8 +19,8 @@ import { FieldOption } from './file-field-mapper/file-field-mapper.component';
   ],
 })
 export class ImportTransactionsDialogComponent implements OnInit, OnDestroy {
-  firstFormGroup: FormGroup;
-  secondFormGroup: FormGroup;
+  fileSelectionFormGroup: FormGroup;
+  fileHeaderMappingFormGroup: FormGroup;
 
   private transactionsFile$: Observable<File>;
   private fileHeader$$: BehaviorSubject<FieldOption[]> = new BehaviorSubject<FieldOption[]>([]);
@@ -28,11 +28,11 @@ export class ImportTransactionsDialogComponent implements OnInit, OnDestroy {
   private ngUnsubscribe = new Subject();
 
   constructor(private fireStorage: AngularFireStorage) {
-    this.firstFormGroup = new FormGroup({
+    this.fileSelectionFormGroup = new FormGroup({
       transactionFile: new FormControl(null, [Validators.required]),
     });
 
-    this.secondFormGroup = new FormGroup({
+    this.fileHeaderMappingFormGroup = new FormGroup({
       transactionDate: new FormControl('', Validators.required),
       postedDate: new FormControl(-1, Validators.required),
       type: new FormControl(-1, Validators.required),
@@ -40,7 +40,7 @@ export class ImportTransactionsDialogComponent implements OnInit, OnDestroy {
       description: new FormControl(-1, Validators.required),
     });
 
-    this.transactionsFile$ = this.firstFormGroup.get('transactionFile')!.valueChanges.pipe(
+    this.transactionsFile$ = this.fileSelectionFormGroup.get('transactionFile')!.valueChanges.pipe(
       tap((file) => {
         const fileReader = new FileReader();
         fileReader.onload = (e) => {
@@ -68,7 +68,7 @@ export class ImportTransactionsDialogComponent implements OnInit, OnDestroy {
   importTransactions(): void {}
 
   uploadFile(): void {
-    const localFile = this.firstFormGroup.get('transactionFile')?.value;
+    const localFile = this.fileSelectionFormGroup.get('transactionFile')?.value;
     const serverFilePath = `import-transactions/${uuidv4()}.csv`;
     this.fireStorage
       .ref(serverFilePath)
@@ -90,6 +90,6 @@ export class ImportTransactionsDialogComponent implements OnInit, OnDestroy {
   }
 
   test(): void {
-    console.log(this.secondFormGroup.value);
+    console.log(this.fileHeaderMappingFormGroup.value);
   }
 }

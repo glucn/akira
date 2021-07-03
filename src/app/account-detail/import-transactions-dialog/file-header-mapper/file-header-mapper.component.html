@@ -8,7 +8,7 @@
       <td>Transaction Date</td>
       <td class="file-field-selection">
         <mat-select formControlName="transactionDate">
-          <mat-option *ngFor="let field of fileFields" [value]="field.value">
+          <mat-option *ngFor="let field of fileHeader" [value]="field.value">
             {{ field.name }}
           </mat-option>
         </mat-select>
@@ -19,7 +19,7 @@
       <td class="file-field-selection">
         <mat-select formControlName="postedDate">
           <mat-option [value]="-1">(Same with transaction date)</mat-option>
-          <mat-option *ngFor="let field of fileFields" [value]="field.value">
+          <mat-option *ngFor="let field of fileHeader" [value]="field.value">
             {{ field.name }}
           </mat-option>
         </mat-select>
@@ -30,7 +30,7 @@
       <td class="file-field-selection">
         <mat-select formControlName="type">
           <mat-option [value]="-1">(Empty)</mat-option>
-          <mat-option *ngFor="let field of fileFields" [value]="field.value">
+          <mat-option *ngFor="let field of fileHeader" [value]="field.value">
             {{ field.name }}
           </mat-option>
         </mat-select>
@@ -40,7 +40,7 @@
       <td>Amount</td>
       <td class="file-field-selection">
         <mat-select formControlName="amount">
-          <mat-option *ngFor="let field of fileFields" [value]="field.value">
+          <mat-option *ngFor="let field of fileHeader" [value]="field.value">
             {{ field.name }}
           </mat-option>
         </mat-select>
@@ -51,7 +51,7 @@
       <td class="file-field-selection">
         <mat-select formControlName="postedDate">
           <mat-option [value]="-1">(Empty)</mat-option>
-          <mat-option *ngFor="let field of fileFields" [value]="field.value">
+          <mat-option *ngFor="let field of fileHeader" [value]="field.value">
             {{ field.name }}
           </mat-option>
         </mat-select>

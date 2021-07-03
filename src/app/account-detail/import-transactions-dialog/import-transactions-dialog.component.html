@@ -1,27 +1,27 @@
 <mat-vertical-stepper [linear]="true" #stepper>
-  <mat-step [stepControl]="firstFormGroup">
-    <form [formGroup]="firstFormGroup">
+  <mat-step [stepControl]="fileSelectionFormGroup">
+    <form [formGroup]="fileSelectionFormGroup">
       <ng-template matStepLabel>Select a file</ng-template>
       <file-uploader formControlName="transactionFile"></file-uploader>
-      <div>
-        <button mat-raised-button matStepperNext color="primary" [disabled]="firstFormGroup.invalid">Next</button>
+      <div class="stepper-buttons">
+        <button mat-raised-button matStepperNext color="primary" [disabled]="fileSelectionFormGroup.invalid">Next</button>
       </div>
     </form>
   </mat-step>
-  <mat-step [stepControl]="secondFormGroup">
+  <mat-step [stepControl]="fileHeaderMappingFormGroup">
     <ng-template matStepLabel>Map data fields</ng-template>
-    <div *ngIf="this.firstFormGroup.get('transactionFile')?.value">
-      <file-field-mapper [formGroup]="secondFormGroup" [fileFields]="fileHeader$ | async"></file-field-mapper>
+    <div *ngIf="this.fileSelectionFormGroup.get('transactionFile')?.value">
+      <file-header-mapper [formGroup]="fileHeaderMappingFormGroup" [fileHeader]="fileHeader$ | async"></file-header-mapper>
     </div>
-    <div>
+    <div class="stepper-buttons">
       <button mat-raised-button matStepperPrevious>Back</button>
-      <button mat-raised-button matStepperNext color="primary" (click)="test()">Next</button>
+      <button mat-raised-button matStepperNext color="primary" [disabled]="fileHeaderMappingFormGroup.invalid" (click)="test()">Next</button>
     </div>
   </mat-step>
   <mat-step>
     <ng-template matStepLabel>Import</ng-template>
     <p>Are your sure you want to import $X transaction to account $Y?</p>
-    <div>
+    <div class="stepper-buttons">
       <button mat-raised-button matStepperPrevious>Back</button>
       <button mat-raised-button color="primary" (click)="importTransactions()">Import</button>
     </div>

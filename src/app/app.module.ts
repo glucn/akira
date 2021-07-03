@@ -40,7 +40,7 @@ import { SidenavItemComponent } from './sidenav/sidenav-item/sidenav-item.compon
 import { SidenavComponent } from './sidenav/sidenav.component';
 import { SidenavService } from './sidenav/sidenav.service';
 import { FileUploaderComponent } from './shared/file-uploader/file-uploader.component';
-import { FileFieldMapperComponent } from './account-detail/import-transactions-dialog/file-field-mapper/file-field-mapper.component';
+import { FileHeaderMapperComponent } from './account-detail/import-transactions-dialog/file-header-mapper/file-header-mapper.component';
 
 @NgModule({
   declarations: [
@@ -57,7 +57,7 @@ import { FileFieldMapperComponent } from './account-detail/import-transactions-d
     CreateUpdateTransactionDialogComponent,
     ImportTransactionsDialogComponent,
     FileUploaderComponent,
-    FileFieldMapperComponent,
+    FileHeaderMapperComponent,
   ],
   imports: [
     BrowserModule,
