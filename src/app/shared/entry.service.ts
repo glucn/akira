@@ -14,8 +14,7 @@ export interface Entry {
   transactionDate: Date; // denormalized - should be the same with the date in the transaction
   postingDate: Date;
   category: string;
-  debit: number;
-  credit: number;
+  amount: number;
   description: string;
   currency?: string;
   balance?: number;
@@ -62,8 +61,7 @@ export class EntryService {
           transactionDate: entry.transactionDate,
           postingDate: entry.postingDate || entry.transactionDate,
           category: entry.category || '',
-          debit: entry.debit || 0,
-          credit: entry.credit || 0,
+          amount: entry.amount || 0,
           description: entry.description || '',
           currency: entry.currency || '',
           created: now,
@@ -91,8 +89,7 @@ export class EntryService {
             transactionDate: entry.transactionDate,
             postingDate: entry.postingDate || entry.transactionDate,
             category: entry.category || '',
-            debit: entry.debit || 0,
-            credit: entry.credit || 0,
+            amount: entry.amount || 0,
             description: entry.description || '',
             currency: entry.currency || '',
             created: now,
@@ -106,17 +103,13 @@ export class EntryService {
 
   private getEntrySnapshot(entryId: string): Observable<firebase.firestore.DocumentSnapshot<Entry>> {
     return this.entryCollectionRef$.pipe(
-      switchMap((collection: AngularFirestoreCollection<Entry>) =>
-        collection.doc<Entry>(entryId).get()
-      )
+      switchMap((collection: AngularFirestoreCollection<Entry>) => collection.doc<Entry>(entryId).get())
     );
   }
 
   public getEntry(entryId: string): Observable<Entry | undefined> {
     return this.entryCollectionRef$.pipe(
-      switchMap((collection: AngularFirestoreCollection<Entry>) =>
-        collection.doc<Entry>(entryId).get()
-      ),
+      switchMap((collection: AngularFirestoreCollection<Entry>) => collection.doc<Entry>(entryId).get()),
       map((snapshot) => (snapshot.exists ? snapshot.data() : undefined)),
       map((entry) => (entry ? { ...entry, entryId: entryId } : undefined))
     );
@@ -143,9 +136,7 @@ export class EntryService {
     );
 
     const nextStartAt$: Observable<firebase.firestore.DocumentSnapshot<Entry> | null> = entries$.pipe(
-      switchMap((entries) =>
-        entries.length > pageSize ? this.getEntrySnapshot(entries[pageSize].entryId) : of(null)
-      )
+      switchMap((entries) => (entries.length > pageSize ? this.getEntrySnapshot(entries[pageSize].entryId) : of(null)))
     );
 
     return zip(entries$, nextStartAt$).pipe(
@@ -167,8 +158,7 @@ export class EntryService {
           transactionDate: entry.transactionDate,
           postingDate: entry.postingDate || entry.transactionDate,
           category: entry.category || '',
-          debit: entry.debit || 0,
-          credit: entry.credit || 0,
+          amount: entry.amount || 0,
           description: entry.description || '',
           currency: entry.currency || '',
           updated: now,
@@ -179,8 +169,6 @@ export class EntryService {
   }
 
   public deleteTransaction(entryId: string): Observable<void> {
-    return this.entryCollectionRef$.pipe(
-      switchMap((collection) => collection.doc<Entry>(entryId).delete())
-    );
+    return this.entryCollectionRef$.pipe(switchMap((collection) => collection.doc<Entry>(entryId).delete()));
   }
 }

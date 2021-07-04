@@ -57,8 +57,7 @@ export class ImportTransactionsDialogComponent implements OnInit, OnDestroy {
       transactionDate: new FormControl('', Validators.required),
       postedDate: new FormControl(-1, Validators.required),
       category: new FormControl(-1, Validators.required),
-      debit: new FormControl(-1, Validators.required),
-      credit: new FormControl(-1, Validators.required),
+      amount: new FormControl(-1, Validators.required),
       description: new FormControl(-1, Validators.required),
     });
 
@@ -127,8 +126,7 @@ export class ImportTransactionsDialogComponent implements OnInit, OnDestroy {
           postingDate:
             fieldMapping.postedDate === -1 ? transactionDate : DateTime.fromISO(fields[fieldMapping.postedDate]).toJSDate(),
           category: fieldMapping.type === -1 ? '' : fields[fieldMapping.category],
-          debit: parseFloat(fields[fieldMapping.debit]) || 0.0,
-          credit: parseFloat(fields[fieldMapping.credit]) || 0.0,
+          amount: parseFloat(fields[fieldMapping.amount]) || 0.0,
           description: fieldMapping.description === -1 ? '' : fields[fieldMapping.description],
           currency: this.data.account.currency,
         };

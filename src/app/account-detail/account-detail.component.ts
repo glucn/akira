@@ -95,7 +95,7 @@ export class AccountDetailComponent implements OnInit, OnDestroy {
     this.ngUnsubscribe.complete();
   }
 
-  createTransaction(): void {
+  createEntry(): void {
     const now = new Date();
 
     const dialogOutput$: Observable<TransactionDialogResult> = this.account$.pipe(
@@ -141,11 +141,11 @@ export class AccountDetailComponent implements OnInit, OnDestroy {
     this.firstPage.emit({});
   }
 
-  updateTransaction(transaction: Entry): void {
+  updateEntry(entry: Entry): void {
     const dialogRef = this.dialog.open(CreateUpdateTransactionDialogComponent, {
       width: '400px',
       data: {
-        transaction: { ...transaction },
+        transaction: { ...entry },
         isCreate: false,
       },
     });
@@ -158,20 +158,20 @@ export class AccountDetailComponent implements OnInit, OnDestroy {
       )
       .subscribe(
         // TODO: remove debug subscription
-        (next) => console.log('transaction updated', next),
+        (next) => console.log('entry updated', next),
         (err) => console.log(err)
       );
   }
 
   // TODO: there could be a bug when deleting cause the total page number reduces
-  deleteTransaction(transaction: Entry): void {
+  deleteEntry(entry: Entry): void {
     const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
       width: '400px',
       data: {
         title: 'Confirm deleting transaction',
-        body: `Are you sure you want to delete the transaction with amount
-               ${this.formatTransactionCurrency(transaction)} happened at
-               ${this.formatTransactionDate(transaction)}?
+        body: `Are you sure you want to delete the entry with amount
+               ${this.formatEntryAmount(entry)} happened at
+               ${this.formatTransactionDate(entry)}?
                `,
       },
     });
@@ -179,29 +179,26 @@ export class AccountDetailComponent implements OnInit, OnDestroy {
       .afterClosed()
       .pipe(
         skipWhile((result: TransactionDialogResult) => !result),
-        switchMap(() => this.entryService.deleteTransaction(transaction.entryId!)),
+        switchMap(() => this.entryService.deleteTransaction(entry.entryId!)),
         takeUntil(this.ngUnsubscribe)
       )
       .subscribe(
         // TODO: remove debug subscription
-        () => console.log('transaction deleted'),
+        () => console.log('entry deleted'),
         (err) => console.log(err)
       );
   }
 
-  private formatTransactionCurrency(transaction: Entry): string {
+  private formatEntryAmount(transaction: Entry): string {
     const option = { style: 'currency', currency: transaction.currency, currencyDisplay: 'narrowSymbol' };
-
-    return transaction.debit
-      ? new Intl.NumberFormat(undefined, option).format(-1 * transaction.debit || 0)
-      : new Intl.NumberFormat(undefined, option).format(transaction.credit || 0);
+    return new Intl.NumberFormat(undefined, option).format(-1 * transaction.amount || 0);
   }
 
   private formatTransactionDate(transaction: Entry): string {
     return new Intl.DateTimeFormat().format(transaction.transactionDate);
   }
 
-  importTransactions(): void {
+  importEntries(): void {
     this.account$
       .pipe(
         switchMap((account) =>

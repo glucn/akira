@@ -51,8 +51,7 @@ export class EntriesDataSource extends DataSource<Entry> {
           transactionDate: entry.transactionDate.toDate(),
           postingDate: entry.postingDate.toDate(),
           category: entry.category,
-          debit: entry.debit,
-          credit: entry.credit,
+          amount: entry.amount,
           description: entry.description,
           currency: entry.currency,
         }))
