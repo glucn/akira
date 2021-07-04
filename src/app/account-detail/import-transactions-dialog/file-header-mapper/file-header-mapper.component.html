@@ -26,9 +26,9 @@
       </td>
     </tr>
     <tr>
-      <td>Type</td>
+      <td>Category</td>
       <td class="file-field-selection">
-        <mat-select formControlName="type">
+        <mat-select formControlName="category">
           <mat-option [value]="-1">(Empty)</mat-option>
           <mat-option *ngFor="let field of fileHeader" [value]="field.value">
             {{ field.name }}

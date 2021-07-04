@@ -3,23 +3,23 @@ import { EventEmitter } from '@angular/core';
 import firebase from 'firebase/app';
 import { BehaviorSubject, Observable, Subject } from 'rxjs';
 import { map, switchMap, takeUntil, tap } from 'rxjs/operators';
-import { Transaction, TransactionService } from '../shared/transaction.service';
+import { Entry, EntryService } from '../shared/entry.service';
 
-export class TransactionsDataSource extends DataSource<Transaction> {
+export class EntriesDataSource extends DataSource<Entry> {
   private PAGE_SIZE = 10;
 
   private currentPageIndex: number = 0;
-  private pageStartAtMarkers: firebase.firestore.DocumentSnapshot<Transaction>[] = [];
+  private pageStartAtMarkers: firebase.firestore.DocumentSnapshot<Entry>[] = [];
   private hasNextPage$$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   private hasPreviousPage$$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
 
-  private currentPage$$: BehaviorSubject<firebase.firestore.DocumentSnapshot<Transaction> | undefined> =
-    new BehaviorSubject<firebase.firestore.DocumentSnapshot<Transaction> | undefined>(undefined);
+  private currentPage$$: BehaviorSubject<firebase.firestore.DocumentSnapshot<Entry> | undefined> =
+    new BehaviorSubject<firebase.firestore.DocumentSnapshot<Entry> | undefined>(undefined);
 
   private ngUnsubscribe = new Subject();
 
   constructor(
-    private transactionService: TransactionService,
+    private entryService: EntryService,
     private accountId: string,
     private firstPageEvent: EventEmitter<{}>,
     private previousPageEvent: EventEmitter<{}>,
@@ -32,28 +32,29 @@ export class TransactionsDataSource extends DataSource<Transaction> {
     this.nextPageEvent.pipe(takeUntil(this.ngUnsubscribe)).subscribe(() => this.listNextPage());
   }
 
-  connect(): Observable<readonly Transaction[]> {
+  connect(): Observable<readonly Entry[]> {
     return this.currentPage$$.pipe(
       switchMap((currentPage) =>
-        this.transactionService.listTransactionsByAccount(this.accountId, this.PAGE_SIZE, currentPage)
+        this.entryService.listEntriesByAccount(this.accountId, this.PAGE_SIZE, currentPage)
       ),
-      tap((listTransactionResponse) => {
-        this.hasNextPage$$.next(listTransactionResponse.hasMore);
-        if (listTransactionResponse.hasMore) {
-          this.pageStartAtMarkers.push(listTransactionResponse.nextStartAt!);
+      tap((listEntriesResponse) => {
+        this.hasNextPage$$.next(listEntriesResponse.hasMore);
+        if (listEntriesResponse.hasMore) {
+          this.pageStartAtMarkers.push(listEntriesResponse.nextStartAt!);
         }
       }),
-      map((listTransactionResponse) =>
-        listTransactionResponse.transactions.map((transaction: any) => ({
-          transactionId: transaction.transactionId,
-          accountId: transaction.accountId,
-          transactionDate: transaction.transactionDate.toDate(),
-          postingDate: transaction.postingDate.toDate(),
-          type: transaction.type,
-          debit: transaction.debit,
-          credit: transaction.credit,
-          description: transaction.description,
-          currency: transaction.currency,
+      map((listEntriesResponse) =>
+        listEntriesResponse.entries.map((entry: any) => ({
+          entryId: entry.entryId,
+          accountId: entry.accountId,
+          connectedTransactionId: entry.connectedTransactionId,
+          transactionDate: entry.transactionDate.toDate(),
+          postingDate: entry.postingDate.toDate(),
+          category: entry.category,
+          debit: entry.debit,
+          credit: entry.credit,
+          description: entry.description,
+          currency: entry.currency,
         }))
       )
     );

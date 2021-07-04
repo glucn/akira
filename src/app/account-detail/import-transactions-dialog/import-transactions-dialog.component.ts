@@ -1,23 +1,23 @@
-import { CollectionViewer, DataSource } from '@angular/cdk/collections';
+import { DataSource } from '@angular/cdk/collections';
 import { STEPPER_GLOBAL_OPTIONS } from '@angular/cdk/stepper';
 import { Component, Inject, OnDestroy, OnInit } from '@angular/core';
 import { AngularFireStorage } from '@angular/fire/storage';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { DateTime } from "luxon";
 import { BehaviorSubject, Observable, of, Subject } from 'rxjs';
 import { takeUntil, tap } from 'rxjs/operators';
 import { Account } from 'src/app/shared/account.service';
-import { Transaction } from 'src/app/shared/transaction.service';
+import { Entry } from 'src/app/shared/entry.service';
 import { v4 as uuidv4 } from 'uuid';
 import { FieldOption } from './file-header-mapper/file-header-mapper.component';
-import { DateTime } from "luxon";
 
 export interface ImportTransactionsDialogData {
   account: Account;
 }
 
 export interface ImportTransactionsDialogResult {
-  transactions: Transaction[];
+  transactions: Entry[];
 }
 
 @Component({
@@ -38,9 +38,9 @@ export class ImportTransactionsDialogComponent implements OnInit, OnDestroy {
   private transactionsFile$: Observable<File>;
   private fileContent$$: BehaviorSubject<string[]> = new BehaviorSubject<string[]>([]);
   private fileHeader$$: BehaviorSubject<FieldOption[]> = new BehaviorSubject<FieldOption[]>([]);
-  importTransactions: Transaction[] = [];
+  importTransactions: Entry[] = [];
 
-  displayedColumns: string[] = ['transactionDate', 'postingDate', 'type', 'debit', 'credit', 'description'];
+  displayedColumns: string[] = ['transactionDate', 'postingDate', 'category', 'debit', 'credit', 'description'];
   importReviewDataSource: ImportTransactionsDataSource | undefined;
 
   private ngUnsubscribe = new Subject();
@@ -56,7 +56,7 @@ export class ImportTransactionsDialogComponent implements OnInit, OnDestroy {
     this.fileHeaderMappingFormGroup = new FormGroup({
       transactionDate: new FormControl('', Validators.required),
       postedDate: new FormControl(-1, Validators.required),
-      type: new FormControl(-1, Validators.required),
+      category: new FormControl(-1, Validators.required),
       debit: new FormControl(-1, Validators.required),
       credit: new FormControl(-1, Validators.required),
       description: new FormControl(-1, Validators.required),
@@ -126,7 +126,7 @@ export class ImportTransactionsDialogComponent implements OnInit, OnDestroy {
           transactionDate: transactionDate,
           postingDate:
             fieldMapping.postedDate === -1 ? transactionDate : DateTime.fromISO(fields[fieldMapping.postedDate]).toJSDate(),
-          type: fieldMapping.type === -1 ? '' : fields[fieldMapping.type],
+          category: fieldMapping.type === -1 ? '' : fields[fieldMapping.category],
           debit: parseFloat(fields[fieldMapping.debit]) || 0.0,
           credit: parseFloat(fields[fieldMapping.credit]) || 0.0,
           description: fieldMapping.description === -1 ? '' : fields[fieldMapping.description],
@@ -139,12 +139,12 @@ export class ImportTransactionsDialogComponent implements OnInit, OnDestroy {
   }
 }
 
-export class ImportTransactionsDataSource extends DataSource<Transaction> {
-  constructor(readonly transactions: Transaction[]) {
+export class ImportTransactionsDataSource extends DataSource<Entry> {
+  constructor(readonly transactions: Entry[]) {
     super();
   }
 
-  connect(): Observable<readonly Transaction[]> {
+  connect(): Observable<readonly Entry[]> {
     return of(this.transactions);
   }
 

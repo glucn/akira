@@ -1,14 +1,14 @@
 import { Component, Inject, OnInit } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { Transaction } from 'src/app/shared/transaction.service';
+import { Entry } from 'src/app/shared/entry.service';
 
 export interface TransactionDialogData {
-  transaction: Partial<Transaction>;
+  transaction: Partial<Entry>;
   isCreate?: boolean;
 }
 
 export interface TransactionDialogResult {
-  transaction: Transaction;
+  transaction: Entry;
 }
 
 @Component({

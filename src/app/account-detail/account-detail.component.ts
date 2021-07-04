@@ -6,13 +6,13 @@ import { map, shareReplay, skipWhile, switchMap, take, takeUntil } from 'rxjs/op
 import { DEFAULT_ICON, getAccountTypes$ } from '../shared/account-type';
 import { Account, AccountService } from '../shared/account.service';
 import { ConfirmationDialogComponent } from '../shared/confirmation-dialog/confirmation-dialog.component';
-import { Transaction, TransactionService } from '../shared/transaction.service';
+import { Entry, EntryService } from '../shared/entry.service';
 import {
   CreateUpdateTransactionDialogComponent,
   TransactionDialogResult,
 } from './create-update-transaction-dialog/create-update-transaction-dialog.component';
 import { ImportTransactionsDialogComponent } from './import-transactions-dialog/import-transactions-dialog.component';
-import { TransactionsDataSource } from './transactions-data-source';
+import { EntriesDataSource } from './entries-data-source';
 
 @Component({
   selector: 'app-account-detail',
@@ -28,7 +28,7 @@ export class AccountDetailComponent implements OnInit, OnDestroy {
   displayedColumns: string[] = [
     'transactionDate',
     'postingDate',
-    'type',
+    'category',
     'debit',
     'credit',
     'description',
@@ -36,8 +36,8 @@ export class AccountDetailComponent implements OnInit, OnDestroy {
     'action',
   ];
 
-  transactionDataSource$: Observable<TransactionsDataSource>;
-  transactionDataSource: TransactionsDataSource | undefined;
+  transactionDataSource$: Observable<EntriesDataSource>;
+  transactionDataSource: EntriesDataSource | undefined;
   hasNextPage$: Observable<boolean>;
   hasPreviousPage$: Observable<boolean>;
   nextPage: EventEmitter<{}> = new EventEmitter();
@@ -49,7 +49,7 @@ export class AccountDetailComponent implements OnInit, OnDestroy {
   constructor(
     private route: ActivatedRoute,
     private accountService: AccountService,
-    private transactionService: TransactionService,
+    private entryService: EntryService,
     private dialog: MatDialog
   ) {
     this.accountId$ = this.route.params.pipe(map((params) => params.id));
@@ -72,8 +72,8 @@ export class AccountDetailComponent implements OnInit, OnDestroy {
     this.transactionDataSource$ = this.accountId$.pipe(
       map(
         (accountId) =>
-          new TransactionsDataSource(
-            this.transactionService,
+          new EntriesDataSource(
+            this.entryService,
             accountId,
             this.firstPage,
             this.previousPage,
@@ -119,7 +119,7 @@ export class AccountDetailComponent implements OnInit, OnDestroy {
     combineLatest([this.account$, dialogOutput$])
       .pipe(
         switchMap(([account, result]) =>
-          this.transactionService.createTransaction({ ...result.transaction, accountId: account.accountId })
+          this.entryService.createEntry({ ...result.transaction, accountId: account.accountId })
         ),
         takeUntil(this.ngUnsubscribe)
       )
@@ -141,7 +141,7 @@ export class AccountDetailComponent implements OnInit, OnDestroy {
     this.firstPage.emit({});
   }
 
-  updateTransaction(transaction: Transaction): void {
+  updateTransaction(transaction: Entry): void {
     const dialogRef = this.dialog.open(CreateUpdateTransactionDialogComponent, {
       width: '400px',
       data: {
@@ -153,7 +153,7 @@ export class AccountDetailComponent implements OnInit, OnDestroy {
       .afterClosed()
       .pipe(
         skipWhile((result: TransactionDialogResult) => !result || !result.transaction),
-        switchMap((result: TransactionDialogResult) => this.transactionService.updateTransaction(result.transaction)),
+        switchMap((result: TransactionDialogResult) => this.entryService.updateEntry(result.transaction)),
         takeUntil(this.ngUnsubscribe)
       )
       .subscribe(
@@ -164,7 +164,7 @@ export class AccountDetailComponent implements OnInit, OnDestroy {
   }
 
   // TODO: there could be a bug when deleting cause the total page number reduces
-  deleteTransaction(transaction: Transaction): void {
+  deleteTransaction(transaction: Entry): void {
     const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
       width: '400px',
       data: {
@@ -179,7 +179,7 @@ export class AccountDetailComponent implements OnInit, OnDestroy {
       .afterClosed()
       .pipe(
         skipWhile((result: TransactionDialogResult) => !result),
-        switchMap(() => this.transactionService.deleteTransaction(transaction.transactionId!)),
+        switchMap(() => this.entryService.deleteTransaction(transaction.entryId!)),
         takeUntil(this.ngUnsubscribe)
       )
       .subscribe(
@@ -189,7 +189,7 @@ export class AccountDetailComponent implements OnInit, OnDestroy {
       );
   }
 
-  private formatTransactionCurrency(transaction: Transaction): string {
+  private formatTransactionCurrency(transaction: Entry): string {
     const option = { style: 'currency', currency: transaction.currency, currencyDisplay: 'narrowSymbol' };
 
     return transaction.debit
@@ -197,7 +197,7 @@ export class AccountDetailComponent implements OnInit, OnDestroy {
       : new Intl.NumberFormat(undefined, option).format(transaction.credit || 0);
   }
 
-  private formatTransactionDate(transaction: Transaction): string {
+  private formatTransactionDate(transaction: Entry): string {
     return new Intl.DateTimeFormat().format(transaction.transactionDate);
   }
 
@@ -215,7 +215,7 @@ export class AccountDetailComponent implements OnInit, OnDestroy {
             .afterClosed()
         ),
         skipWhile((result) => !result),
-        switchMap((result) => this.transactionService.createTransactions(result.transactions)),
+        switchMap((result) => this.entryService.createTransactions(result.transactions)),
         take(1)
       )
       .subscribe(

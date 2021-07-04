@@ -1,9 +1,9 @@
 <h2 mat-dialog-title>{{ data.isCreate ? 'Create Transaction' : 'Update Transaction' }}</h2>
 <mat-dialog-content>
   <mat-form-field>
-    <mat-label>Type</mat-label>
+    <mat-label>Category</mat-label>
     <!-- TODO: change this field to mat-select -->
-    <input matInput cdkFocusInitial required [(ngModel)]="data.transaction.type" #type="ngModel" />
+    <input matInput cdkFocusInitial required [(ngModel)]="data.transaction.category" #type="ngModel" />
   </mat-form-field>
 
   <mat-form-field>
