@@ -6,7 +6,7 @@ import { map, switchMap, takeUntil, tap } from 'rxjs/operators';
 import { Transaction, TransactionService } from '../shared/transaction.service';
 
 export class TransactionsDataSource extends DataSource<Transaction> {
-  private PAGE_SIZE = 5;
+  private PAGE_SIZE = 10;
 
   private currentPageIndex: number = 0;
   private pageStartAtMarkers: firebase.firestore.DocumentSnapshot<Transaction>[] = [];

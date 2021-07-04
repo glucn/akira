@@ -142,7 +142,6 @@ export class AccountDetailComponent implements OnInit, OnDestroy {
   }
 
   updateTransaction(transaction: Transaction): void {
-    console.log(transaction);
     const dialogRef = this.dialog.open(CreateUpdateTransactionDialogComponent, {
       width: '400px',
       data: {
@@ -194,7 +193,7 @@ export class AccountDetailComponent implements OnInit, OnDestroy {
     const option = { style: 'currency', currency: transaction.currency, currencyDisplay: 'narrowSymbol' };
 
     return transaction.debit
-      ? new Intl.NumberFormat(undefined, option).format(transaction.debit || 0)
+      ? new Intl.NumberFormat(undefined, option).format(-1 * transaction.debit || 0)
       : new Intl.NumberFormat(undefined, option).format(transaction.credit || 0);
   }
 

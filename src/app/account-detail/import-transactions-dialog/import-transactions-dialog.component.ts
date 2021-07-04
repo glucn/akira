@@ -10,6 +10,7 @@ import { Account } from 'src/app/shared/account.service';
 import { Transaction } from 'src/app/shared/transaction.service';
 import { v4 as uuidv4 } from 'uuid';
 import { FieldOption } from './file-header-mapper/file-header-mapper.component';
+import { DateTime } from "luxon";
 
 export interface ImportTransactionsDialogData {
   account: Account;
@@ -109,8 +110,7 @@ export class ImportTransactionsDialogComponent implements OnInit, OnDestroy {
     return this.fileHeader$$.asObservable();
   }
 
-  test(): void {
-    console.log(this.fileHeaderMappingFormGroup.value);
+  confirmFieldsMapping(): void {
     const fieldMapping = this.fileHeaderMappingFormGroup.value;
     this.importTransactions = this.fileContent$$
       .getValue()
@@ -118,12 +118,14 @@ export class ImportTransactionsDialogComponent implements OnInit, OnDestroy {
       .filter((line) => !!line)
       .map((line) => {
         const fields = line.split(',').map((f) => f.trim());
-        const transactionDate = new Date(fields[fieldMapping.transactionDate] + ' (PST)');
+        // TODO: handle date formats that are not compatible with ISO
+        // TODO: handle different timezones
+        const transactionDate: Date = DateTime.fromISO(fields[fieldMapping.transactionDate]).toJSDate();
         return {
           accountId: this.data.account.accountId,
           transactionDate: transactionDate,
           postingDate:
-            fieldMapping.postedDate === -1 ? transactionDate : new Date(fields[fieldMapping.postedDate] + ' (PST)'),
+            fieldMapping.postedDate === -1 ? transactionDate : DateTime.fromISO(fields[fieldMapping.postedDate]).toJSDate(),
           type: fieldMapping.type === -1 ? '' : fields[fieldMapping.type],
           debit: parseFloat(fields[fieldMapping.debit]) || 0.0,
           credit: parseFloat(fields[fieldMapping.credit]) || 0.0,

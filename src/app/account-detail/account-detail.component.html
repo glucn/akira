@@ -60,7 +60,7 @@
             <ng-container matColumnDef="debit">
               <th mat-header-cell *matHeaderCellDef>Debit</th>
               <td mat-cell *matCellDef="let transaction">
-                {{ transaction.debit ? (transaction.debit | currency: account.currency:'symbol-narrow') : ''}}
+                {{ transaction.debit ? (transaction.debit | currency: account.currency:'symbol-narrow') : '' }}
               </td>
             </ng-container>
 
@@ -95,7 +95,9 @@
                 </button>
                 <mat-menu #moreActions="matMenu">
                   <button mat-menu-item (click)="updateTransaction(transaction)">Edit</button>
+                  <!-- TODO: implement me -->
                   <button mat-menu-item>Move Up (Same Day)</button>
+                  <!-- TODO: implement me -->
                   <button mat-menu-item>Move Down (Same Day)</button>
                   <button mat-menu-item (click)="deleteTransaction(transaction)">Delete</button>
                 </mat-menu>
