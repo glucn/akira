@@ -5,7 +5,10 @@
     "outDir": "./out-tsc/spec",
     "types": [
       "jasmine"
-    ]
+    ],
+    "paths": {
+      "timers": ["./node_modules/timers-browserify"]
+    }
   },
   "files": [
     "src/test.ts",
